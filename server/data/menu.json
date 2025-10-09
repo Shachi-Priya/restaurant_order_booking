@@ -1,0 +1,93 @@
+[
+  {
+    "category": "Förrätter",
+    "items": [
+      { "id": 1, "name": "Sate 1st" },
+      { "id": 2, "name": "Tempura Shrimp 2st" },
+      { "id": 3, "name": "Chicken Strips 2st" },
+      { "id": 4, "name": "Edamame" },
+      { "id": 5, "name": "Soya Edamame" },
+      { "id": 6, "name": "Spicy Edamame" },
+      { "id": 7, "name": "Wakami Salad" },
+      { "id": 8, "name": "Mini Buritto Lax" },
+      { "id": 9, "name": "Mini Buritto Chicken" },
+      { "id": 10, "name": "Misso Souppa" }
+    ]
+  },
+  {
+    "category": "Ura Maki",
+    "items": [
+      { "id": 11, "name": "Alaska Roll" },
+      { "id": 12, "name": "Avocado Kappa Roll" },
+      { "id": 13, "name": "California Roll" },
+      { "id": 14, "name": "Tekka Roll" },
+      { "id": 15, "name": "Crispy Chicken Roll" },
+      { "id": 16, "name": "Ebi Roll" },
+      { "id": 17, "name": "Fried Ebi Roll" },
+      { "id": 18, "name": "Philadelphia Roll" }
+    ]
+  },
+  {
+    "category": "Deluxe Rolls",
+    "items": [
+      { "id": 19, "name": "Spicy Tuna" },
+      { "id": 20, "name": "Spicy Salmon" },
+      { "id": 21, "name": "Chicken Deluxe" },
+      { "id": 22, "name": "Tempura Deluxe" },
+      { "id": 23, "name": "Tempura Royale" }
+    ]
+  },
+  {
+    "category": "Maki",
+    "items": [
+      { "id": 24, "name": "Maki Avocado" },
+      { "id": 25, "name": "Maki Chicken" },
+      { "id": 26, "name": "Maki Ebi" },
+      { "id": 27, "name": "Maki Kappa" },
+      { "id": 28, "name": "Maki Shake" },
+      { "id": 29, "name": "Maki Shake Avocado" },
+      { "id": 30, "name": "Maki Surimi" },
+      { "id": 31, "name": "Maki Tamago" },
+      { "id": 32, "name": "Maki Maguro" }
+    ]
+  },
+  {
+    "category": "Nigiri",
+    "items": [
+      { "id": 33, "name": "Nigiri Avocado" },
+      { "id": 34, "name": "Nigiri Ebi" },
+      { "id": 35, "name": "Nigiri Inari" },
+      { "id": 36, "name": "Nigiri Shake" },
+      { "id": 37, "name": "Nigiri Shake Flambé" },
+      { "id": 38, "name": "Nigiri Spicy Tuna" },
+      { "id": 39, "name": "Nigiri Tamago" },
+      { "id": 40, "name": "Nigiri Maguro" }
+    ]
+  },
+  {
+    "category": "Saigo Rolls",
+    "items": [
+      { "id": 41, "name": "Saigo Chicken Roll" },
+      { "id": 42, "name": "Saigo Chili Roll" },
+      { "id": 43, "name": "Saigo Salmon Roll" },
+      { "id": 44, "name": "Saigo Shrimp Roll" },
+      { "id": 45, "name": "Saigo Tuna Roll" },
+      { "id": 46, "name": "Saigo Vegetarian Roll" }
+    ]
+  },
+  {
+    "category": "Tillbehör",
+    "items": [
+      { "id": 47, "name": "Ingefära" },
+      { "id": 48, "name": "Wasabi" },
+      { "id": 49, "name": "Chilimayo (+5 kr)" }
+    ]
+  },
+  {
+    "category": "Sashimi",
+    "items": [
+      { "id": 50, "name": "65A Lax (3st)" },
+      { "id": 51, "name": "65B Tonfisk (3st)" }
+    ]
+  }
+]
