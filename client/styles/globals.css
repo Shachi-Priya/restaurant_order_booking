@@ -1,0 +1,13 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background: linear-gradient(180deg, #000000 0%, #000a1d 100%);
+  color: #E6EAF2;
+}
+
+/* nice scroll on mobile */
+* { scroll-behavior: smooth; }

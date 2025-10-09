@@ -1,0 +1,93 @@
+[
+  {
+    "category": "Förrätter",
+    "items": [
+      { "id": 1, "name": "Sate 1st", "image": "/menu/1.jpg" },
+      { "id": 2, "name": "Tempura Shrimp 2st", "image": "/menu/2.jpg" },
+      { "id": 3, "name": "Chicken Strips 2st", "image": "/menu/3.jpg" },
+      { "id": 4, "name": "Edamame", "image": "/menu/4.jpg" },
+      { "id": 5, "name": "Soya Edamame", "image": "/menu/5.jpg" },
+      { "id": 6, "name": "Spicy Edamame", "image": "/menu/6.jpg" },
+      { "id": 7, "name": "Wakami Salad", "image": "/menu/7.jpg" },
+      { "id": 8, "name": "Mini Buritto Lax", "image": "/menu/8.jpg" },
+      { "id": 9, "name": "Mini Buritto Chicken", "image": "/menu/9.jpg" },
+      { "id": 10, "name": "Misso Souppa", "image": "/menu/10.jpg" }
+    ]
+  },
+  {
+    "category": "Ura Maki",
+    "items": [
+      { "id": 11, "name": "Alaska Roll", "image": "/menu/11.jpg" },
+      { "id": 12, "name": "Avocado Kappa Roll", "image": "/menu/12.jpg" },
+      { "id": 13, "name": "California Roll", "image": "/menu/13.jpg" },
+      { "id": 14, "name": "Tekka Roll", "image": "/menu/14.jpg" },
+      { "id": 15, "name": "Crispy Chicken Roll", "image": "/menu/15.jpg" },
+      { "id": 16, "name": "Ebi Roll", "image": "/menu/16.jpg" },
+      { "id": 17, "name": "Fried Ebi Roll", "image": "/menu/17.jpg" },
+      { "id": 18, "name": "Philadelphia Roll", "image": "/menu/18.jpg" }
+    ]
+  },
+  {
+    "category": "Deluxe Rolls",
+    "items": [
+      { "id": 19, "name": "Spicy Tuna", "image": "/menu/19.jpg" },
+      { "id": 20, "name": "Spicy Salmon", "image": "/menu/20.jpg" },
+      { "id": 21, "name": "Chicken Deluxe", "image": "/menu/21.jpg" },
+      { "id": 22, "name": "Tempura Deluxe", "image": "/menu/22.jpg" },
+      { "id": 23, "name": "Tempura Royale", "image": "/menu/23.jpg" }
+    ]
+  },
+  {
+    "category": "Maki",
+    "items": [
+      { "id": 24, "name": "Maki Avocado", "image": "/menu/24.jpg" },
+      { "id": 25, "name": "Maki Chicken", "image": "/menu/25.jpg" },
+      { "id": 26, "name": "Maki Ebi", "image": "/menu/26.jpg" },
+      { "id": 27, "name": "Maki Kappa", "image": "/menu/27.jpg" },
+      { "id": 28, "name": "Maki Shake", "image": "/menu/28.jpg" },
+      { "id": 29, "name": "Maki Shake Avocado", "image": "/menu/29.jpg" },
+      { "id": 30, "name": "Maki Surimi", "image": "/menu/30.jpg" },
+      { "id": 31, "name": "Maki Tamago", "image": "/menu/31.jpg" },
+      { "id": 32, "name": "Maki Maguro", "image": "/menu/32.jpg" }
+    ]
+  },
+  {
+    "category": "Nigiri",
+    "items": [
+      { "id": 33, "name": "Nigiri Avocado", "image": "/menu/33.jpg" },
+      { "id": 34, "name": "Nigiri Ebi", "image": "/menu/34.jpg" },
+      { "id": 35, "name": "Nigiri Inari", "image": "/menu/35.jpg" },
+      { "id": 36, "name": "Nigiri Shake", "image": "/menu/36.jpg" },
+      { "id": 37, "name": "Nigiri Shake Flambé", "image": "/menu/37.jpg" },
+      { "id": 38, "name": "Nigiri Spicy Tuna", "image": "/menu/38.jpg" },
+      { "id": 39, "name": "Nigiri Tamago", "image": "/menu/39.jpg" },
+      { "id": 40, "name": "Nigiri Maguro", "image": "/menu/40.jpg" }
+    ]
+  },
+  {
+    "category": "Saigo Rolls",
+    "items": [
+      { "id": 41, "name": "Saigo Chicken Roll", "image": "/menu/41.jpg" },
+      { "id": 42, "name": "Saigo Chili Roll", "image": "/menu/42.jpg" },
+      { "id": 43, "name": "Saigo Salmon Roll", "image": "/menu/43.jpg" },
+      { "id": 44, "name": "Saigo Shrimp Roll", "image": "/menu/44.jpg" },
+      { "id": 45, "name": "Saigo Tuna Roll", "image": "/menu/45.jpg" },
+      { "id": 46, "name": "Saigo Vegetarian Roll", "image": "/menu/46.jpg" }
+    ]
+  },
+  {
+    "category": "Tillbehör",
+    "items": [
+      { "id": 47, "name": "Ingefära", "image": "/menu/47.jpg" },
+      { "id": 48, "name": "Wasabi", "image": "/menu/48.jpg" },
+      { "id": 49, "name": "Chilimayo (+5 kr)", "image": "/menu/49.jpg" }
+    ]
+  },
+  {
+    "category": "Sashimi",
+    "items": [
+      { "id": 50, "name": "65A Lax (3st)", "image": "/menu/50.jpg" },
+      { "id": 51, "name": "65B Tonfisk (3st)", "image": "/menu/51.jpg" }
+    ]
+  }
+]
