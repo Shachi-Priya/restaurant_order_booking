@@ -70,14 +70,12 @@
 //   );
 // }
 
-
-
 //////////////////
 
+import Image from 'next/image';
 
-
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function Placed() {
   const router = useRouter();
@@ -98,8 +96,14 @@ export default function Placed() {
       <header className="border-b bg-[#FFFBEB]">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-extrabold">Order Placed</h1>
-          <div className="px-3 py-1 rounded-xl bg-yellow-300 text-black font-semibold shadow">
-            Black & Yellow
+          <div>
+            <Image
+              src="/menu/saigo.png" // ✅ make sure this file exists under /public/menu/
+              alt="Saigo Logo"
+              width={92}
+              height={92}
+              className="rounded-full"
+            />
           </div>
         </div>
       </header>
@@ -113,7 +117,9 @@ export default function Placed() {
             <ul className="text-sm divide-y">
               {order.items.map((it, i) => (
                 <li key={i} className="flex justify-between py-2">
-                  <span>{it.name} × {it.qty}</span>
+                  <span>
+                    {it.name} × {it.qty}
+                  </span>
                   <span>₹{(it.price || 0) * it.qty}</span>
                 </li>
               ))}
@@ -124,7 +130,10 @@ export default function Placed() {
               <Row k="GST" v={order.GST} />
               <Row k="Payable" v={order.payable} bold />
             </div>
-            <a className="inline-block mt-4 underline" href={`/?tableNo=${order.tableNo}`}>
+            <a
+              className="inline-block mt-4 underline"
+              href={`/?tableNo=${order.tableNo}`}
+            >
               Back to Menu
             </a>
           </div>
@@ -136,8 +145,11 @@ export default function Placed() {
 
 function Row({ k, v, bold }) {
   return (
-    <div className={`flex justify-between ${bold ? "font-semibold text-lg" : ""}`}>
-      <span>{k}</span><span>₹{v}</span>
+    <div
+      className={`flex justify-between ${bold ? 'font-semibold text-lg' : ''}`}
+    >
+      <span>{k}</span>
+      <span>₹{v}</span>
     </div>
   );
 }

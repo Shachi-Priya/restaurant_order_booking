@@ -2,15 +2,15 @@
   {
     "category": "Förrätter",
     "items": [
-      { "id": 1, "name": "Sate 1st", "image": "/menu/1.jpg" },
-      { "id": 2, "name": "Tempura Shrimp 2st", "image": "/menu/2.jpg" },
-      { "id": 3, "name": "Chicken Strips 2st", "image": "/menu/3.jpg" },
-      { "id": 4, "name": "Edamame", "image": "/menu/4.jpg" },
-      { "id": 5, "name": "Soya Edamame", "image": "/menu/5.jpg" },
-      { "id": 6, "name": "Spicy Edamame", "image": "/menu/6.jpg" },
-      { "id": 7, "name": "Wakami Salad", "image": "/menu/7.jpg" },
-      { "id": 8, "name": "Mini Buritto Lax", "image": "/menu/8.jpg" },
-      { "id": 9, "name": "Mini Buritto Chicken", "image": "/menu/9.jpg" },
+      { "id": 1, "name": "Sate 1st", "image": "/menu/01.jpg" },
+      { "id": 2, "name": "Tempura Shrimp 2st", "image": "/menu/02.jpg" },
+      { "id": 3, "name": "Chicken Strips 2st", "image": "/menu/03.jpg" },
+      { "id": 4, "name": "Edamame", "image": "/menu/04.jpg" },
+      { "id": 5, "name": "Soya Edamame", "image": "/menu/05.jpg" },
+      { "id": 6, "name": "Spicy Edamame", "image": "/menu/06.jpg" },
+      { "id": 7, "name": "Wakami Salad", "image": "/menu/07.jpg" },
+      { "id": 8, "name": "Mini Buritto Lax", "image": "/menu/08.jpg" },
+      { "id": 9, "name": "Mini Buritto Chicken", "image": "/menu/09.jpg" },
       { "id": 10, "name": "Misso Souppa", "image": "/menu/10.jpg" }
     ]
   },

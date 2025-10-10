@@ -57,9 +57,7 @@
 //   );
 // }
 
-
-
-
+import Image from 'next/image';
 
 export default function CartBar({ lines, total, onPlace }) {
   return (
@@ -81,4 +79,3 @@ export default function CartBar({ lines, total, onPlace }) {
     </div>
   );
 }
-
