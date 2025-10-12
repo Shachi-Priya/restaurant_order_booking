@@ -26,27 +26,26 @@ export default function Shell({ title, subtitle, right, children }) {
     <div
       className="min-h-[100dvh]"
       style={{
-        background: 'linear-gradient(180deg,#0B0E13 0%,#0E141D 100%)',
-        color: '#E8ECF3',
+        background: '#3D846C', // your theme background
+        color: '#000',
       }}
     >
-      <header className="sticky top-0 z-30 by-glass">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      {/* Sticky glass header */}
+      <header className="sticky top-0 z-30 header-glass">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between sticky bg-[#3D846C]">
           <div>
-            <h1
-              className="text-xl sm:text-2xl font-semibold"
-              style={{ color: '#E9C46A' }}
-            >
+            <h1 className="text-xl sm:text-2xl font-semibold text-white">
               {title}
             </h1>
             {subtitle && (
-              <p className="text-xs sm:text-sm text-sub">{subtitle}</p>
+              <p className="text-xs sm:text-sm text-white/85">{subtitle}</p>
             )}
           </div>
+
           {right ?? (
-            <div className="">
+            <div>
               <Image
-                src="/menu/saigo.png" // ✅ make sure this file exists under /public/menu/
+                src="/menu/saigo.png" // make sure this exists in /public/menu/
                 alt="Saigo Logo"
                 width={92}
                 height={92}
@@ -57,6 +56,7 @@ export default function Shell({ title, subtitle, right, children }) {
         </div>
       </header>
 
+      {/* Page body */}
       <main className="max-w-5xl mx-auto px-4 py-4">{children}</main>
     </div>
   );
