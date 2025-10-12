@@ -71,9 +71,7 @@
 // }
 
 //////////////////
-
 import Image from 'next/image';
-
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -92,46 +90,51 @@ export default function Placed() {
   }, [id]);
 
   return (
-    <div className="min-h-[100dvh] bg-[#FFFBEB] text-[#111827]">
-      <header className="border-b bg-[#FFFBEB]">
+    <div className="min-h-[100dvh] bg-[#3D846C] text-white">
+      {/* Header (same theme as main) */}
+      <header className="app-header">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-extrabold">Order Placed</h1>
-          <div>
-            <Image
-              src="/menu/saigo.png" // ✅ make sure this file exists under /public/menu/
-              alt="Saigo Logo"
-              width={92}
-              height={92}
-              className="rounded-full"
-            />
-          </div>
+          <Image
+            src="/menu/saigo.png" // ensure this exists in /public/menu/
+            alt="Saigo Logo"
+            width={56}
+            height={56}
+            className="rounded-full"
+          />
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6">
         {!order ? (
-          <div className="bg-white border rounded-2xl p-4">Loading…</div>
+          <div className="ui-glass p-4 rounded-2xl border border-white/10">
+            Loading…
+          </div>
         ) : (
-          <div className="bg-white border rounded-2xl p-4 shadow-md">
-            <div className="font-semibold mb-2">Table #{order.tableNo}</div>
-            <ul className="text-sm divide-y">
+          <div className="ui-glass p-4 rounded-2xl border border-white/10 shadow-md">
+            {/* Table + logo row */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="font-semibold text-lg">
+                Table #{order.tableNo}
+              </div>
+            </div>
+
+            {/* Items list WITHOUT any prices */}
+            <ul className="divide-y divide-white/10">
               {order.items.map((it, i) => (
-                <li key={i} className="flex justify-between py-2">
-                  <span>
-                    {it.name} × {it.qty}
+                <li key={i} className="flex items-center justify-between py-3">
+                  <span className="font-medium">{it.name}</span>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="opacity-80">Qty</span>
+                    <span className="font-semibold">{it.qty}</span>
                   </span>
-                  <span>₹{(it.price || 0) * it.qty}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-3 border-t pt-3 space-y-1">
-              <Row k="Subtotal" v={order.total} />
-              <Row k="Service Tax" v={order.serviceTax} />
-              <Row k="GST" v={order.GST} />
-              <Row k="Payable" v={order.payable} bold />
-            </div>
+
+            {/* Back to menu */}
             <a
-              className="inline-block mt-4 underline"
+              className="inline-block mt-5 px-4 py-2 rounded-xl bg-white text-[#3D846C] font-semibold"
               href={`/?tableNo=${order.tableNo}`}
             >
               Back to Menu
@@ -139,17 +142,6 @@ export default function Placed() {
           </div>
         )}
       </main>
-    </div>
-  );
-}
-
-function Row({ k, v, bold }) {
-  return (
-    <div
-      className={`flex justify-between ${bold ? 'font-semibold text-lg' : ''}`}
-    >
-      <span>{k}</span>
-      <span>₹{v}</span>
     </div>
   );
 }

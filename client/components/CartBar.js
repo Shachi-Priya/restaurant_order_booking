@@ -57,24 +57,47 @@
 //   );
 // }
 
-import Image from 'next/image';
+// import Image from 'next/image';
 
+// export default function CartBar({ lines, total, onPlace }) {
+//   return (
+//     <div className="fixed bottom-4 left-0 right-0">
+//       <div className="max-w-6xl mx-auto px-4">
+//         <div className="bg-white border shadow-soft rounded-2xl p-4 flex items-center justify-between">
+//           <div className="font-semibold">
+//             Items: {lines.length} • Total: ₹{total}
+//           </div>
+//           <button
+//             className="px-5 py-2 rounded-2xl bg-brand.black text-brand.yellow font-semibold"
+//             onClick={onPlace}
+//             disabled={lines.length === 0}
+//           >
+//             Place Order
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 export default function CartBar({ lines, total, onPlace }) {
+  const disabled = lines.length === 0;
+
   return (
-    <div className="fixed bottom-4 left-0 right-0">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="bg-white border shadow-soft rounded-2xl p-4 flex items-center justify-between">
-          <div className="font-semibold">
+    <div className="bar">
+      <div className="bar-inner">
+        <div>
+          <div className="total">
             Items: {lines.length} • Total: ₹{total}
           </div>
-          <button
-            className="px-5 py-2 rounded-2xl bg-brand.black text-brand.yellow font-semibold"
-            onClick={onPlace}
-            disabled={lines.length === 0}
-          >
-            Place Order
-          </button>
+          <div className="total-sub">Tax included</div>
         </div>
+        <button
+          className="btn btn--accent disabled:opacity-60 disabled:cursor-not-allowed"
+          onClick={onPlace}
+          disabled={disabled}
+        >
+          Place Order
+        </button>
       </div>
     </div>
   );
