@@ -401,3 +401,11 @@ hr {
 .order-switch--on .order-switch__thumb {
   transform: translateX(calc(var(--w) - var(--h)));
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

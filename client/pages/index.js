@@ -317,14 +317,14 @@
 //     </Shell>
 //   );
 // }
+// pages/index.js
+// pages/index.js
 import Image from 'next/image';
-
 import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
 import Shell from '../components/Shell';
-import CartBar from '../components/CartBar';
 import tablesData from '../data/tables.json';
 import menuData from '../data/menu.json';
 
@@ -343,7 +343,7 @@ export default function Home() {
   const router = useRouter();
   const { support, tableNo: tableNoParam } = router.query;
 
-  // ---------- Hooks (must be unconditional) ----------
+  // ---------- Hooks (unconditional) ----------
   const tableSet = useMemo(() => new Set(tablesData), []);
   const [cart, setCart] = useState({});
   const [adult, setAdult] = useState(0);
@@ -406,7 +406,7 @@ export default function Home() {
   const sectionCount = (sec) =>
     sec.items.reduce((n, it) => n + (cart[it.id] || 0), 0);
 
-  // ---------- Conditional pages ----------
+  // ---------- Alt page ----------
   if (isSupport) {
     return (
       <Shell title="Support — All Orders" subtitle="Newest first">
@@ -427,27 +427,7 @@ export default function Home() {
 
   // ---------- Main page ----------
   return (
-    <div className="min-h-screen bg-[#3D846C] text-white">
-      {/* Header */}
-      <header className="app-header">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-white font-bold text-3xl">Table #{tableNo}</h1>
-            <p className="opacity-80">Choose your items</p>
-          </div>
-          <div>
-            <Image
-              src="/menu/saigo.png"
-              alt="Saigo Logo"
-              width={92}
-              height={92}
-              className="rounded-full"
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* Content */}
+    <div className="min-h-screen bg-[#244a38] text-white">
       <main className="max-w-5xl mx-auto px-4 py-4">
         {/* HERO IMAGE */}
         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
@@ -461,14 +441,22 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Table # and hint (compact, under hero) */}
+        <div className="mt-3 flex items-center gap-3">
+          <div className="px-3 py-1 rounded-full bg-white/10 border border-white/15">
+            <span className="font-semibold">Table #{tableNo}</span>
+          </div>
+          <span className="text-white/85 text-sm">Choose your items</span>
+        </div>
+
         {/* People counters */}
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#3D846C]/50 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+        <div className="mt-4 grid grid-cols-3 sm:grid-cols-3 gap-3 bg-[#244a38]/50 border border-white/10 rounded-xl p-3 backdrop-blur-md">
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-semibold text-white/90">
               ADULT
             </label>
             <input
-              className="input w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
+              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
               type="number"
               min="0"
               value={adult}
@@ -482,7 +470,7 @@ export default function Home() {
               BARN 7–12 ÅR
             </label>
             <input
-              className="input w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
+              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
               type="number"
               min="0"
               value={barn1}
@@ -496,7 +484,7 @@ export default function Home() {
               BARN 4–6 ÅR
             </label>
             <input
-              className="input w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
+              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
               type="number"
               min="0"
               value={barn2}
@@ -507,17 +495,17 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Category chips */}
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        {/* Category chips (NORMAL, non-sticky) */}
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
           {categories.map((sec, i) => {
             const id = slugify(sec.category);
             const count = sectionCount(sec);
             return (
               <button
                 key={id}
-                className={`px-5 py-2 rounded-full whitespace-nowrap ${
+                className={`px-5 py-2 rounded-full whitespace-nowrap transition-colors ${
                   i === 0
-                    ? 'bg-white text-[#3D846C] font-semibold'
+                    ? 'bg-white text-[#244a38] font-semibold'
                     : 'bg-white/10 text-white border border-white/20'
                 }`}
                 onClick={() => {
@@ -533,7 +521,7 @@ export default function Home() {
         </div>
 
         {/* Sections (horizontal scroll cards) */}
-        <div className="mt-4 space-y-8 pb-28">
+        <div className="mt-4 space-y-10 pb-28">
           {categories.map((sec) => {
             const id = slugify(sec.category);
             return (
@@ -551,7 +539,7 @@ export default function Home() {
                   </span>
                 </div>
 
-                {/* HORIZONTAL SCROLL */}
+                {/* Horizontal row of cards */}
                 <div className="flex gap-4 overflow-x-auto pb-2">
                   {sec.items.map((it) => {
                     const qty = cart[it.id] || 0;
@@ -559,9 +547,9 @@ export default function Home() {
                     return (
                       <div
                         key={it.id}
-                        className="min-w-[280px] bg-white/8 border border-white/10 rounded-2xl overflow-hidden flex-shrink-0 card-isolate"
+                        className="min-w-[280px] bg-white/8 border border-white/10 rounded-2xl overflow-hidden flex-shrink-0"
                       >
-                        {/* Uniform image box */}
+                        {/* Consistent image box */}
                         <div className="relative w-full aspect-[4/3]">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
@@ -574,13 +562,12 @@ export default function Home() {
                           />
                         </div>
 
-                        {/* Footer (single blur + single top border) */}
+                        {/* Footer */}
                         <div className="px-3 h-16 flex items-center justify-between rounded-b-2xl border-t border-white/10 bg-white/6 backdrop-blur-md">
                           <div className="font-semibold truncate pr-3">
                             {it.name}
                           </div>
 
-                          {/* Qty pill (no extra blur, subtle ring) */}
                           <div className="flex items-center gap-2 rounded-full px-2 py-1 bg-white/8 ring-1 ring-white/15">
                             <button
                               className="w-8 h-8 flex items-center justify-center rounded-full bg-white/8 ring-1 ring-white/20 text-white"
@@ -609,35 +596,28 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Floating order bar */}
+      {/* Floating order bar (kept) */}
       <div className="fixed bottom-4 left-0 right-0">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="bg-white text-[#3D846C] rounded-2xl p-4 flex items-center justify-between shadow-lg">
-            {/* <div className="font-semibold"> */}
-            <div>
-              {/* Items: {lines.length} • Total: ₹{total} */}
+          <div className="bg-white text-[#244a38] rounded-2xl p-4 flex items-center justify-between shadow-lg">
+            <div className="font-semibold">Items: {lines.length}</div>
+            <div className="flex gap-3">
               <button
-                className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold
-             cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={placeOrder}
-                disabled={lines.length > 0}
+                disabled={lines.length === 0}
               >
                 Place Order
               </button>
+              <button
+                className="btn1 liquid"
+                onClick={placeOrder}
+                disabled={lines.length === 0}
+                style={{ fontWeight: 600, fontSize: '1rem' }}
+              >
+                Complete
+              </button>
             </div>
-            <button
-              className="btn1 liquid"
-              onClick={placeOrder}
-              disabled={lines.length === 0}
-              style={{
-                // borderColor: '#3D846C',
-                // color: '#000',
-                fontWeight: 600,
-                fontSize: '1rem',
-              }}
-            >
-              Complete
-            </button>
           </div>
         </div>
       </div>
