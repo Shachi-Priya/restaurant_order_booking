@@ -409,3 +409,11 @@ hr {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.by-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* or 1/1, 16/9 depending on layout */
+  overflow: hidden;
+  border-radius: 12px; /* optional for aesthetics */
+}

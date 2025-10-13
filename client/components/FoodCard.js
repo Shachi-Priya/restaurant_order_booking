@@ -64,8 +64,13 @@ export default function FoodCard({ item, qty = 0, onAdd, onRemove }) {
           src={imgSrc}
           alt={item.name}
           fill
+          quality={60} // start 50–70
+          priority={/* only for 1 hero image */ true}
+          loading="lazy"
+          placeholder="blur"
           sizes="(max-width: 640px) 100vw, 33vw"
           className="object-cover"
+          decoding="async"
           onError={(e) => {
             e.currentTarget.style.display = 'none';
             e.currentTarget.parentElement.style.background =
