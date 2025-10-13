@@ -210,4 +210,5 @@ export default async function handler(req, res) {
     console.error("Next handler error:", err);
     return res.status(500).json({ message: "Proxy error", error: err?.message || String(err) });
   }
+  
 }
