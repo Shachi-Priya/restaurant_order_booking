@@ -89,14 +89,21 @@ export default function Placed() {
     })();
   }, [id]);
 
+  const people = {
+    adult: order?.adult ?? 0,
+    barn1: order?.Barn1 ?? 0,
+    barn2: order?.Barn2 ?? 0,
+  };
+  const peopleTotal = (people.adult || 0) + (people.barn1 || 0) + (people.barn2 || 0);
+
   return (
     <div className="min-h-[100dvh] bg-[#3D846C] text-white">
-      {/* Header (same theme as main) */}
+      {/* Header */}
       <header className="app-header">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-extrabold">Order Placed</h1>
           <Image
-            src="/menu/saigo.png" // ensure this exists in /public/menu/
+            src="/menu/saigo.png"
             alt="Saigo Logo"
             width={56}
             height={56}
@@ -112,25 +119,53 @@ export default function Placed() {
           </div>
         ) : (
           <div className="ui-glass p-4 rounded-2xl border border-white/10 shadow-md">
-            {/* Table + logo row */}
+            {/* Table */}
             <div className="flex items-center justify-between mb-4">
-              <div className="font-semibold text-lg">
-                Table #{order.tableNo}
-              </div>
+              <div className="font-semibold text-lg">Table #{order.tableNo}</div>
             </div>
 
-            {/* Items list WITHOUT any prices */}
-            <ul className="divide-y divide-white/10">
-              {order.items.map((it, i) => (
-                <li key={i} className="flex items-center justify-between py-3">
-                  <span className="font-medium">{it.name}</span>
-                  <span className="inline-flex items-center gap-2">
-                    <span className="opacity-80">Qty</span>
-                    <span className="font-semibold">{it.qty}</span>
+            {/* People summary */}
+            <div className="mb-4">
+              {peopleTotal > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-sm">
+                    <span className="opacity-80 mr-1">Adult:</span>
+                    <span className="font-semibold">{people.adult}</span>
                   </span>
-                </li>
-              ))}
-            </ul>
+                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-sm">
+                    <span className="opacity-80 mr-1">Barn 7–12 ÅR:</span>
+                    <span className="font-semibold">{people.barn1}</span>
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-sm">
+                    <span className="opacity-80 mr-1">Barn 4–6 ÅR:</span>
+                    <span className="font-semibold">{people.barn2}</span>
+                  </span>
+                </div>
+              ) : (
+                <p className="text-sm text-white/80">
+                  No people count provided.
+                </p>
+              )}
+            </div>
+
+            {/* Items list WITHOUT prices */}
+            {Array.isArray(order.items) && order.items.length > 0 ? (
+              <ul className="divide-y divide-white/10">
+                {order.items.map((it, i) => (
+                  <li key={i} className="flex items-center justify-between py-3">
+                    <span className="font-medium">{it.name}</span>
+                    <span className="inline-flex items-center gap-2">
+                      <span className="opacity-80">Qty</span>
+                      <span className="font-semibold">{it.qty}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/85">
+                No menu items in this order.
+              </div>
+            )}
 
             {/* Back to menu */}
             <a

@@ -321,7 +321,6 @@
 
 ///////////////////////////////////////////////////
 // pages/index.js
-// pages/index.js
 import Image from 'next/image';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -346,7 +345,17 @@ export default function Home() {
   const router = useRouter();
   const adultRef = useRef(null);
   const { support, tableNo: tableNoParam } = router.query;
+
+  const [routerReady, setRouterReady] = useState(false);
+  useEffect(() => {
+    if (router.isReady) setRouterReady(true);
+  }, [router.isReady]);
+
   const [showPeopleError, setShowPeopleError] = useState(false);
+
+  // NEW: success modal state
+  const [showPlacedModal, setShowPlacedModal] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState(null); // { id, items, payable }
 
   // ---------- Hooks (unconditional) ----------
   const tableSet = useMemo(() => new Set(tablesData), []);
@@ -390,8 +399,25 @@ export default function Home() {
   const sectionRefs = useRef({});
 
   const isSupport = support === 'true';
-  const tableNo = tableNoParam ? Number(tableNoParam) : undefined;
-  const valid = tableNo && tableSet.has(tableNo);
+
+  // --- Robust tableNo read: router first, window fallback ---
+  const rawTableNoParam = useMemo(() => {
+    if (typeof tableNoParam !== 'undefined') return tableNoParam;
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      return sp.get('tableNo') ?? undefined;
+    }
+    return undefined;
+  }, [tableNoParam]);
+
+  const tableNo = useMemo(() => {
+    const n = Number(rawTableNoParam);
+    return Number.isFinite(n) ? n : undefined;
+  }, [rawTableNoParam]);
+
+  // Only mark invalid if URL actually had a tableNo AND it’s not allowed
+  const urlHasTableNo = typeof rawTableNoParam !== 'undefined' && rawTableNoParam !== null;
+  const valid = !!tableNo && tableSet.has(tableNo);
 
   // Convert people inputs to non-negative integers; empty -> 0
   const adultNum = adult === '' ? 0 : Math.max(0, parseInt(adult, 10) || 0);
@@ -405,15 +431,20 @@ export default function Home() {
     }
   }, [peopleTotal, showPeopleError]);
 
-  const placeOrder = async () => {
+  const ensurePeopleOrFocus = () => {
     if (peopleTotal === 0) {
       adultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       adultRef.current?.focus({ preventScroll: true });
       setShowPeopleError(true);
-      return;
+      return false;
     }
+    setShowPeopleError(false);
+    return true;
+  };
 
-    setShowPeopleError(false); // hide if valid
+  // Upsert into ongoing "placed" order (same order id reused)
+  const placeOrder = async () => {
+    if (!ensurePeopleOrFocus()) return;
 
     const payload = {
       tableNo,
@@ -429,14 +460,39 @@ export default function Home() {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (res.ok && data?.order?._id) router.push(`/placed?id=${data.order._id}`);
-    else alert(data?.message || 'Failed to place order');
+
+    if (res.ok && data?.order?._id) {
+      setPlacedOrder({
+        id: data.order._id,
+        items: data.order.items || [],
+        payable: data.order.payable,
+      });
+      setShowPlacedModal(true);
+      setCart({});
+    } else {
+      alert(data?.message || 'Failed to place order');
+    }
+  };
+
+  // Complete even with zero items/people
+  const completeOrder = async () => {
+    const res = await fetch('/api/orderHandler?action=completed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tableNo, adult: adultNum, Barn1: barn1Num, Barn2: barn2Num }),
+    });
+    const data = await res.json();
+    if (res.ok && data?.order?._id) {
+      router.push(`/placed?id=${data.order._id}`);
+    } else {
+      alert(data?.message || 'Failed to complete order');
+    }
   };
 
   const sectionCount = (sec) =>
     sec.items.reduce((n, it) => n + (cart[it.id] || 0), 0);
 
-  // ---------- Alt page ----------
+  // ---------- Support page ----------
   if (isSupport) {
     return (
       <Shell title="Support — All Orders" subtitle="Newest first">
@@ -447,10 +503,35 @@ export default function Home() {
     );
   }
 
-  if (!valid) {
+  // ---------- Lazy loading while router/query not ready ----------
+  if (!routerReady) {
+    return (
+      <div className="min-h-screen bg-[#244a38] text-white">
+        <main className="max-w-5xl mx-auto px-4 py-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-40 rounded-2xl bg-white/10" />
+            <div className="h-8 w-40 rounded-full bg-white/10" />
+            <div className="h-24 rounded-xl bg-white/10" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ---------- If URL HAS tableNo but it's invalid, then show invalid ----------
+  if (urlHasTableNo && !valid) {
     return (
       <Shell title="Welcome" subtitle="Scan your table QR to begin">
-        <div className="ui-surface p-4">Invalid or missing table number.</div>
+        <div className="ui-surface p-4">Invalid table number.</div>
+      </Shell>
+    );
+  }
+
+  // ---------- If URL DOES NOT have tableNo, show welcome (no invalid flash) ----------
+  if (!urlHasTableNo) {
+    return (
+      <Shell title="Welcome" subtitle="Scan your table QR to begin">
+        <div className="ui-surface p-4">Please scan your table QR to begin.</div>
       </Shell>
     );
   }
@@ -541,7 +622,6 @@ export default function Home() {
             </p>
           )}
         </div>
-
 
         {/* Category chips (NORMAL, non-sticky) */}
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
@@ -644,7 +724,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Floating order bar (kept) */}
+      {/* Floating order bar */}
       <div className="fixed bottom-4 left-0 right-0">
         <div className="max-w-5xl mx-auto px-4">
           <div className="bg-white text-[#244a38] rounded-2xl p-4 flex items-center justify-between shadow-lg">
@@ -659,8 +739,7 @@ export default function Home() {
               </button>
               <button
                 className="btn1 liquid"
-                onClick={placeOrder}
-                disabled={lines.length === 0}
+                onClick={completeOrder}
                 style={{ fontWeight: 600, fontSize: '1rem' }}
               >
                 Complete
@@ -669,6 +748,50 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* ===== Success Modal (after Place Order) ===== */}
+      {showPlacedModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white text-[#244a38] rounded-2xl w-full max-w-md mx-4 p-5 shadow-xl animate-fadeIn">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Order placed!</h3>
+              <button
+                aria-label="Close"
+                onClick={() => setShowPlacedModal(false)}
+                className="w-8 h-8 -mr-2 rounded-full text-[#244a38]/70 hover:bg-black/5"
+              >
+                ×
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-700 mt-1">
+              We’ve added these items to your order for <span className="font-semibold">Table #{tableNo}</span>.
+            </p>
+
+            <ul className="mt-3 max-h-48 overflow-auto divide-y divide-gray-200/70">
+              {(placedOrder?.items || []).map((it) => (
+                <li key={it.id} className="py-2 flex items-center justify-between text-sm">
+                  <span className="truncate pr-2">{it.name}</span>
+                  <span className="font-semibold">× {it.qty}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-4 flex gap-2 justify-end">
+              <button
+                onClick={() => setShowPlacedModal(false)}
+                className="px-4 py-2 rounded-xl bg-[#244a38] text-white font-semibold hover:bg-[#1d3f32] transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

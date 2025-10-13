@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const connectMongo = require("./config/mongodb");
 const {
-  createOrder,
+  upsertOrder,
+  completeOrder,
+  reopenOrder,
   getAllOrders,
   getOrdersByTable,
 } = require("./controller/orderController");
@@ -10,18 +12,27 @@ const {
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware
+// ---------- Middleware ----------
 app.use(cors());
 app.use(express.json());
 
-// Connect to DB
+// ---------- Connect to MongoDB ----------
 connectMongo();
 
-// Routes
-app.post("/api/orders", createOrder);
+// ---------- Routes ----------
+
+// Create or update ongoing ("placed") buffet order
+app.post("/api/orders", upsertOrder);
+// Mark ongoing order as "completed"
+app.post("/api/orders/complete", completeOrder);
+// mark "placed" again
+app.post("/api/orders/reopen", reopenOrder);          
+// Fetch all orders (support view)
 app.get("/api/orders", getAllOrders);
+// Fetch orders by table number
 app.get("/api/orders/:tableNo", getOrdersByTable);
 
+// ---------- Start server ----------
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
