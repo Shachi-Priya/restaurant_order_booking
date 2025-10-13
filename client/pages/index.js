@@ -318,7 +318,6 @@
 //   );
 // }
 
-
 ///////////////////////////////////////////////////
 // pages/index.js
 import Image from 'next/image';
@@ -344,6 +343,10 @@ function slugify(str) {
 export default function Home() {
   const router = useRouter();
   const adultRef = useRef(null);
+  const [placing, setPlacing] = useState(false);
+
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const { support, tableNo: tableNoParam } = router.query;
 
   const [routerReady, setRouterReady] = useState(false);
@@ -416,7 +419,8 @@ export default function Home() {
   }, [rawTableNoParam]);
 
   // Only mark invalid if URL actually had a tableNo AND it’s not allowed
-  const urlHasTableNo = typeof rawTableNoParam !== 'undefined' && rawTableNoParam !== null;
+  const urlHasTableNo =
+    typeof rawTableNoParam !== 'undefined' && rawTableNoParam !== null;
   const valid = !!tableNo && tableSet.has(tableNo);
 
   // Convert people inputs to non-negative integers; empty -> 0
@@ -444,33 +448,51 @@ export default function Home() {
 
   // Upsert into ongoing "placed" order (same order id reused)
   const placeOrder = async () => {
+    if (placing) return; // prevent double click
     if (!ensurePeopleOrFocus()) return;
 
-    const payload = {
-      tableNo,
-      items: lines.map((l) => ({ id: l.id, qty: l.qty })),
-      adult: adultNum,
-      Barn1: barn1Num,
-      Barn2: barn2Num,
-    };
+    setPlacing(true);
+    const controller = new AbortController();
+    // optional: auto-timeout after 20s so UI never hangs
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
-    const res = await fetch('/api/orderHandler', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
+    try {
+      const payload = {
+        tableNo,
+        items: lines.map((l) => ({ id: l.id, qty: l.qty })),
+        adult: adultNum,
+        Barn1: barn1Num,
+        Barn2: barn2Num,
+      };
 
-    if (res.ok && data?.order?._id) {
-      setPlacedOrder({
-        id: data.order._id,
-        items: data.order.items || [],
-        payable: data.order.payable,
+      const res = await fetch('/api/orderHandler', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
-      setShowPlacedModal(true);
-      setCart({});
-    } else {
-      alert(data?.message || 'Failed to place order');
+      const data = await res.json();
+
+      if (res.ok && data?.order?._id) {
+        setPlacedOrder({
+          id: data.order._id,
+          items: data.order.items || [],
+          payable: data.order.payable,
+        });
+        setShowPlacedModal(true);
+        setCart({});
+      } else {
+        alert(data?.message || 'Failed to place order');
+      }
+    } catch (err) {
+      alert(
+        err?.name === 'AbortError'
+          ? 'Request timed out, please try again.'
+          : 'Network error. Please try again.'
+      );
+    } finally {
+      clearTimeout(timeout);
+      setPlacing(false);
     }
   };
 
@@ -479,7 +501,12 @@ export default function Home() {
     const res = await fetch('/api/orderHandler?action=completed', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tableNo, adult: adultNum, Barn1: barn1Num, Barn2: barn2Num }),
+      body: JSON.stringify({
+        tableNo,
+        adult: adultNum,
+        Barn1: barn1Num,
+        Barn2: barn2Num,
+      }),
     });
     const data = await res.json();
     if (res.ok && data?.order?._id) {
@@ -531,7 +558,9 @@ export default function Home() {
   if (!urlHasTableNo) {
     return (
       <Shell title="Welcome" subtitle="Scan your table QR to begin">
-        <div className="ui-surface p-4">Please scan your table QR to begin.</div>
+        <div className="ui-surface p-4">
+          Please scan your table QR to begin.
+        </div>
       </Shell>
     );
   }
@@ -542,7 +571,7 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-4 py-4">
         {/* HERO IMAGE */}
         <div className="rounded-2xl overflow-hidden border border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
-          <div className="w-full h-40 sm:h-56 md:h-64 lg:h-72">
+          <div className="w-full h-full sm:h-56 md:h-64 lg:h-72">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/menu/58.jpg"
@@ -678,12 +707,16 @@ export default function Home() {
                         className="min-w-[280px] bg-white/8 border border-white/10 rounded-2xl overflow-hidden flex-shrink-0"
                       >
                         {/* Consistent image box */}
-                        <div className="relative w-full aspect-[4/3]">
+                        {/* Image area (clickable) */}
+                        <div
+                          className="relative w-full aspect-[4/3] cursor-pointer"
+                          onClick={() => setSelectedItem(it)} // 👈 new click handler
+                        >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={img}
                             alt={it.name}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-cover hover:opacity-90 transition-opacity"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}
@@ -731,12 +764,20 @@ export default function Home() {
             <div className="font-semibold">Items: {lines.length}</div>
             <div className="flex gap-3">
               <button
-                className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 flex items-center gap-2"
                 onClick={placeOrder}
-                disabled={lines.length === 0}
+                disabled={lines.length === 0 || placing}
               >
-                Place Order
+                {placing ? (
+                  <>
+                    <span className="spinner h-4 w-4" aria-hidden />
+                    Placing…
+                  </>
+                ) : (
+                  'Place Order'
+                )}
               </button>
+
               <button
                 className="btn1 liquid"
                 onClick={completeOrder}
@@ -748,6 +789,55 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* === Image Preview Modal === */}
+      {selectedItem && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div
+            className="bg-white rounded-2xl overflow-hidden w-[90%] max-w-lg h-[75vh] flex flex-col animate-fadeIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative w-full h-[65%]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedItem.image || `/menu/${selectedItem.id}.jpg`}
+                alt={selectedItem.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 p-4 text-[#244a38] text-center flex flex-col justify-center">
+              <h3 className="text-xl font-semibold mb-1">
+                {selectedItem.name}
+              </h3>
+              {selectedItem.desc && (
+                <p className="text-gray-600 text-sm mb-2">
+                  {selectedItem.desc}
+                </p>
+              )}
+              {typeof selectedItem.price === 'number' && (
+                <p className="font-bold text-lg text-[#1d3f32]">
+                  ₹{selectedItem.price}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+                transform: scale(0.95);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+          `}</style>
+        </div>
+      )}
 
       {/* ===== Success Modal (after Place Order) ===== */}
       {showPlacedModal && (
@@ -769,12 +859,16 @@ export default function Home() {
             </div>
 
             <p className="text-sm text-gray-700 mt-1">
-              We’ve added these items to your order for <span className="font-semibold">Table #{tableNo}</span>.
+              We’ve added these items to your order for{' '}
+              <span className="font-semibold">Table #{tableNo}</span>.
             </p>
 
             <ul className="mt-3 max-h-48 overflow-auto divide-y divide-gray-200/70">
               {(placedOrder?.items || []).map((it) => (
-                <li key={it.id} className="py-2 flex items-center justify-between text-sm">
+                <li
+                  key={it.id}
+                  className="py-2 flex items-center justify-between text-sm"
+                >
                   <span className="truncate pr-2">{it.name}</span>
                   <span className="font-semibold">× {it.qty}</span>
                 </li>
