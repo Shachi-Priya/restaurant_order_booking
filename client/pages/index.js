@@ -317,10 +317,13 @@
 //     </Shell>
 //   );
 // }
+
+
+///////////////////////////////////////////////////
 // pages/index.js
 // pages/index.js
 import Image from 'next/image';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
@@ -341,14 +344,19 @@ function slugify(str) {
 
 export default function Home() {
   const router = useRouter();
+  const adultRef = useRef(null);
   const { support, tableNo: tableNoParam } = router.query;
+  const [showPeopleError, setShowPeopleError] = useState(false);
 
   // ---------- Hooks (unconditional) ----------
   const tableSet = useMemo(() => new Set(tablesData), []);
   const [cart, setCart] = useState({});
-  const [adult, setAdult] = useState(0);
-  const [barn1, setBarn1] = useState(0);
-  const [barn2, setBarn2] = useState(0);
+
+  // People counters start as EMPTY strings (no "0" shown initially)
+  const [adult, setAdult] = useState('');
+  const [barn1, setBarn1] = useState('');
+  const [barn2, setBarn2] = useState('');
+
   const categories = useMemo(() => menuData, []);
 
   const lines = useMemo(() => {
@@ -385,14 +393,36 @@ export default function Home() {
   const tableNo = tableNoParam ? Number(tableNoParam) : undefined;
   const valid = tableNo && tableSet.has(tableNo);
 
+  // Convert people inputs to non-negative integers; empty -> 0
+  const adultNum = adult === '' ? 0 : Math.max(0, parseInt(adult, 10) || 0);
+  const barn1Num = barn1 === '' ? 0 : Math.max(0, parseInt(barn1, 10) || 0);
+  const barn2Num = barn2 === '' ? 0 : Math.max(0, parseInt(barn2, 10) || 0);
+  const peopleTotal = adultNum + barn1Num + barn2Num;
+
+  useEffect(() => {
+    if (showPeopleError && peopleTotal > 0) {
+      setShowPeopleError(false);
+    }
+  }, [peopleTotal, showPeopleError]);
+
   const placeOrder = async () => {
+    if (peopleTotal === 0) {
+      adultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      adultRef.current?.focus({ preventScroll: true });
+      setShowPeopleError(true);
+      return;
+    }
+
+    setShowPeopleError(false); // hide if valid
+
     const payload = {
       tableNo,
       items: lines.map((l) => ({ id: l.id, qty: l.qty })),
-      adult,
-      Barn1: barn1,
-      Barn2: barn2,
+      adult: adultNum,
+      Barn1: barn1Num,
+      Barn2: barn2Num,
     };
+
     const res = await fetch('/api/orderHandler', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -450,50 +480,68 @@ export default function Home() {
         </div>
 
         {/* People counters */}
-        <div className="mt-4 grid grid-cols-3 sm:grid-cols-3 gap-3 bg-[#244a38]/50 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-semibold text-white/90">
-              ADULT
-            </label>
-            <input
-              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
-              type="number"
-              min="0"
-              value={adult}
-              onChange={(e) =>
-                setAdult(Math.max(0, parseInt(e.target.value || '0', 10)))
-              }
-            />
+        <div className="mt-4 bg-[#244a38]/50 border border-white/10 rounded-xl p-4 backdrop-blur-md">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-semibold text-white/90">
+                ADULT
+              </label>
+              <input
+                ref={adultRef}
+                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                type="number"
+                min="0"
+                value={adult}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === '') return setAdult('');
+                  if (/^\d+$/.test(v)) setAdult(v);
+                }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-semibold text-white/90">
+                BARN 7–12 ÅR
+              </label>
+              <input
+                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                type="number"
+                min="0"
+                value={barn1}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === '') return setBarn1('');
+                  if (/^\d+$/.test(v)) setBarn1(v);
+                }}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-semibold text-white/90">
+                BARN 4–6 ÅR
+              </label>
+              <input
+                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                type="number"
+                min="0"
+                value={barn2}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === '') return setBarn2('');
+                  if (/^\d+$/.test(v)) setBarn2(v);
+                }}
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-semibold text-white/90">
-              BARN 7–12 ÅR
-            </label>
-            <input
-              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
-              type="number"
-              min="0"
-              value={barn1}
-              onChange={(e) =>
-                setBarn1(Math.max(0, parseInt(e.target.value || '0', 10)))
-              }
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-semibold text-white/90">
-              BARN 4–6 ÅR
-            </label>
-            <input
-              className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2"
-              type="number"
-              min="0"
-              value={barn2}
-              onChange={(e) =>
-                setBarn2(Math.max(0, parseInt(e.target.value || '0', 10)))
-              }
-            />
-          </div>
+
+          {showPeopleError && (
+            <p className="text-red-300 text-sm text-center mt-3 animate-fadeIn">
+              Please enter at least one person (Adult or Barn) to continue.
+            </p>
+          )}
         </div>
+
 
         {/* Category chips (NORMAL, non-sticky) */}
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
