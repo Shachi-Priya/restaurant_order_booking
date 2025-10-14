@@ -591,63 +591,80 @@ export default function Home() {
 
         {/* People counters */}
         <div className="mt-4 bg-[#244a38]/50 border border-white/10 rounded-xl p-4 backdrop-blur-md">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+            {/* Adult Dropdown */}
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold text-white/90">
                 ADULT
               </label>
-              <input
-                ref={adultRef}
+              <select
                 className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
-                type="number"
-                min="0"
                 value={adult}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v === '') return setAdult('');
-                  if (/^\d+$/.test(v)) setAdult(v);
-                }}
-              />
+                onChange={(e) => setAdult(Number(e.target.value))}
+              >
+                <option value={0}>Select</option>
+                {[...Array(10)].map((_, i) => (
+                  <option
+                    key={i + 1}
+                    value={i + 1}
+                    className="bg-[#244a38] text-white "
+                  >
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
             </div>
 
+            {/* Barn 7–12 ÅR Dropdown */}
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold text-white/90">
                 BARN 7–12 ÅR
               </label>
-              <input
+              <select
                 className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
-                type="number"
-                min="0"
                 value={barn1}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v === '') return setBarn1('');
-                  if (/^\d+$/.test(v)) setBarn1(v);
-                }}
-              />
+                onChange={(e) => setBarn1(Number(e.target.value))}
+              >
+                <option value={0}>Select</option>
+                {[...Array(10)].map((_, i) => (
+                  <option
+                    key={i + 1}
+                    value={i + 1}
+                    className="bg-[#244a38] text-white"
+                  >
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
             </div>
 
+            {/* Barn 4–6 ÅR Dropdown */}
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold text-white/90">
                 BARN 4–6 ÅR
               </label>
-              <input
+              <select
                 className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
-                type="number"
-                min="0"
                 value={barn2}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (v === '') return setBarn2('');
-                  if (/^\d+$/.test(v)) setBarn2(v);
-                }}
-              />
+                onChange={(e) => setBarn2(Number(e.target.value))}
+              >
+                <option value={0}>Select</option>
+                {[...Array(10)].map((_, i) => (
+                  <option
+                    key={i + 1}
+                    value={i + 1}
+                    className="bg-[#244a38] text-white"
+                  >
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           {showPeopleError && (
             <p className="text-red-300 text-sm text-center mt-3 animate-fadeIn">
-              Please enter at least one person (Adult or Barn) to continue.
+              Please select at least one person (Adult or Barn) to continue.
             </p>
           )}
         </div>
