@@ -458,7 +458,7 @@ export default function Home() {
       <div className="fixed bottom-4 left-0 right-0">
         <div className="max-w-5xl mx-auto px-4">
           <div className="bg-white text-[#244a38] rounded-2xl p-4 flex items-center justify-between shadow-lg">
-            <div className="font-semibold">Items: {lines.length}</div>
+            <div className="font-semibold">Artiklar: {lines.length}</div>
             <div className="flex gap-3">
               <button
                 className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 flex items-center gap-2"
@@ -471,7 +471,7 @@ export default function Home() {
                     Placing…
                   </>
                 ) : (
-                  'Place Order'
+                  'Lägg beställning'
                 )}
               </button>
 
@@ -480,7 +480,7 @@ export default function Home() {
                 onClick={completeOrder}
                 style={{ fontWeight: 600, fontSize: '1rem' }}
               >
-                Complete
+                Slutför
               </button>
             </div>
           </div>
