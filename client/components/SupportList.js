@@ -248,7 +248,7 @@ export default function SupportList() {
     <div className="space-y-4">
       {/* Header with reload button and countdown */}
       <div className="flex items-center justify-between">
-        <h2 className="text-white text-xl font-bold">Support Orders</h2>
+        <h2 className="text-white text-xl font-bold"></h2>
 
         <div className="flex items-center gap-3">
           {lastUpdated && (
