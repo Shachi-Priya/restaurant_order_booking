@@ -597,7 +597,9 @@ export default function Home() {
               <label className="text-[11px] font-semibold text-white/90">
                 ADULT
               </label>
+
               <select
+                ref={adultRef}
                 className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
                 value={adult}
                 onChange={(e) => setAdult(Number(e.target.value))}
