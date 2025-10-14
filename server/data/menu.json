@@ -2,92 +2,117 @@
   {
     "category": "Förrätter",
     "items": [
-      { "id": 1, "name": "Sate 1st" },
-      { "id": 2, "name": "Tempura Shrimp 2st" },
-      { "id": 3, "name": "Chicken Strips 2st" },
-      { "id": 4, "name": "Edamame" },
-      { "id": 5, "name": "Soya Edamame" },
-      { "id": 6, "name": "Spicy Edamame" },
-      { "id": 7, "name": "Wakami Salad" },
-      { "id": 8, "name": "Mini Buritto Lax" },
-      { "id": 9, "name": "Mini Buritto Chicken" },
-      { "id": 10, "name": "Misso Souppa" }
+      { "id": 1, "name": "Sate 1ST" },
+      { "id": 2, "name": "Tempura Shrimp 2ST" },
+      { "id": 3, "name": "Chicken Strips 2ST" },
+      { "id": 4, "name": "Vårrullar Kyckling" },
+      { "id": 5, "name": "Vårrullar Vegetariska" },
+      { "id": 6, "name": "Edamame" },
+      { "id": 7, "name": "Goma Edamame" },
+      { "id": 8, "name": "Spicy Edamame" },
+      { "id": 9, "name": "Wakame Salad" },
+      { "id": 10, "name": "Mini Buritto Lax" },
+      { "id": 11, "name": "Mini Buritto Chicken" },
+      { "id": 12, "name": "Misosoppa" },
+      { "id": 13, "name": "Misosoppa Lax" },
+      { "id": 14, "name": "Misosoppa Tofu" },
+      { "id": 15, "name": "Mini Bowl Lax" },
+      { "id": 16, "name": "Mini Bowl Chicken" },
+      { "id": 17, "name": "Mini Bowl Tofu" }
     ]
   },
   {
-    "category": "Ura Maki",
+    "category": "FÄRSKA RULLAR 6 ST",
     "items": [
-      { "id": 11, "name": "Alaska Roll" },
-      { "id": 12, "name": "Avocado Kappa Roll" },
-      { "id": 13, "name": "California Roll" },
-      { "id": 14, "name": "Tekka Roll" },
-      { "id": 15, "name": "Crispy Chicken Roll" },
-      { "id": 16, "name": "Ebi Roll" },
-      { "id": 17, "name": "Fried Ebi Roll" },
-      { "id": 18, "name": "Philadelphia Roll" }
+      { "id": 18, "name": "Lax" },
+      { "id": 19, "name": "Räkor" },
+      { "id": 20, "name": "Teriyaki Kyckling" },
+      { "id": 21, "name": "Veggie" }
     ]
   },
   {
-    "category": "Deluxe Rolls",
+    "category": "URA MAKI 4 ST",
     "items": [
-      { "id": 19, "name": "Spicy Tuna" },
-      { "id": 20, "name": "Spicy Salmon" },
-      { "id": 21, "name": "Chicken Deluxe" },
-      { "id": 22, "name": "Tempura Deluxe" },
-      { "id": 23, "name": "Tempura Royale" }
+      { "id": 22, "name": "Alaska Roll" },
+      { "id": 23, "name": "Avocado Kappa Roll" },
+      { "id": 24, "name": "California Roll" },
+      { "id": 25, "name": "Tekka Roll" },
+      { "id": 26, "name": "Crispy Chicken Roll" },
+      { "id": 27, "name": "Ebi Roll" },
+      { "id": 28, "name": "Fried Ebi Roll" },
+      { "id": 29, "name": "Philadelphia Roll" }
     ]
   },
   {
-    "category": "Maki",
+    "category": "MAKI 6 ST",
     "items": [
-      { "id": 24, "name": "Maki Avocado" },
-      { "id": 25, "name": "Maki Chicken" },
-      { "id": 26, "name": "Maki Ebi" },
-      { "id": 27, "name": "Maki Kappa" },
-      { "id": 28, "name": "Maki Shake" },
-      { "id": 29, "name": "Maki Shake Avocado" },
-      { "id": 30, "name": "Maki Surimi" },
-      { "id": 31, "name": "Maki Tamago" },
-      { "id": 32, "name": "Maki Maguro" }
+      { "id": 30, "name": "Maki Avocado" },
+      { "id": 31, "name": "Maki Chicken" },
+      { "id": 32, "name": "Maki Ebi" },
+      { "id": 33, "name": "Maki Kappa" },
+      { "id": 34, "name": "Maki Shake" },
+      { "id": 35, "name": "Maki Shake Avocado" },
+      { "id": 36, "name": "Maki Surimi" },
+      { "id": 37, "name": "Maki Tamago" },
+      { "id": 38, "name": "Maki Maguro" }
     ]
   },
   {
-    "category": "Nigiri",
+    "category": "NIGIRI 1 ST",
     "items": [
-      { "id": 33, "name": "Nigiri Avocado" },
-      { "id": 34, "name": "Nigiri Ebi" },
-      { "id": 35, "name": "Nigiri Inari" },
-      { "id": 36, "name": "Nigiri Shake" },
-      { "id": 37, "name": "Nigiri Shake Flambé" },
-      { "id": 38, "name": "Nigiri Spicy Tuna" },
-      { "id": 39, "name": "Nigiri Tamago" },
-      { "id": 40, "name": "Nigiri Maguro" }
+      { "id": 39, "name": "Nigiri Avocado" },
+      { "id": 40, "name": "Nigiri Ebi" },
+      { "id": 41, "name": "Nigiri Inari" },
+      { "id": 42, "name": "Nigiri Shake" },
+      { "id": 43, "name": "Nigiri Shake Flambé" },
+      { "id": 44, "name": "Nigiri Spicy Tuna" },
+      { "id": 45, "name": "Nigiri Tamago" },
+      { "id": 46, "name": "Nigiri Maguro" },
+      { "id": 47, "name": "Nigiri Surimi" }
     ]
   },
   {
-    "category": "Saigo Rolls",
+    "category": "SAIGO ROLLS 7 ST",
     "items": [
-      { "id": 41, "name": "Saigo Chicken Roll" },
-      { "id": 42, "name": "Saigo Chili Roll" },
-      { "id": 43, "name": "Saigo Salmon Roll" },
-      { "id": 44, "name": "Saigo Shrimp Roll" },
-      { "id": 45, "name": "Saigo Tuna Roll" },
-      { "id": 46, "name": "Saigo Vegetarian Roll" }
+      { "id": 48, "name": "Saigo Chicken" },
+      { "id": 49, "name": "Saigo Chili Cheese" },
+      { "id": 50, "name": "Saigo Salmon Roll" },
+      { "id": 51, "name": "Saigo Shrimp Roll" },
+      { "id": 52, "name": "Saigo Tuna Roll" },
+      { "id": 53, "name": "Saigo Vegetarian Roll" }
     ]
   },
   {
-    "category": "Tillbehör",
+    "category": "DELUXE ROLLS 8 ST",
     "items": [
-      { "id": 47, "name": "Ingefära" },
-      { "id": 48, "name": "Wasabi" },
-      { "id": 49, "name": "Chilimayo (+5 kr)" }
+      { "id": 54, "name": "Spicy Tuna" },
+      { "id": 55, "name": "Spicy Salmon" },
+      { "id": 56, "name": "Chicken Deluxe" },
+      { "id": 57, "name": "Tempura Deluxe" },
+      { "id": 58, "name": "Tempura Royale" }
     ]
   },
   {
-    "category": "Sashimi",
+    "category": "SASHIMI DELUXE 4 ST",
     "items": [
-      { "id": 50, "name": "65A Lax (3st)" },
-      { "id": 51, "name": "65B Tonfisk (3st)" }
+      { "id": 59, "name": "Lax" },
+      { "id": 60, "name": "Tonfisk" }
+    ]
+  },
+  {
+    "category": "SASHIMI SPECIAL",
+    "items": [
+      { "id": 61, "name": "Lax Special" },
+      { "id": 62, "name": "Tonfisk Special" }
+    ]
+  },
+  {
+    "category": "TILLBEHÖR",
+    "items": [
+      { "id": 63, "name": "Ingefära" },
+      { "id": 64, "name": "Wasabi" },
+      { "id": 65, "name": "Chili Mayo" },
+      { "id": 66, "name": "Wasabi Mayo" }
     ]
   }
 ]

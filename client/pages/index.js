@@ -262,9 +262,9 @@ export default function Home() {
         {/* Table # and hint (compact, under hero) */}
         <div className="mt-3 flex items-center gap-3">
           <div className="px-3 py-1 rounded-full bg-white/10 border border-white/15">
-            <span className="font-semibold">Table #{tableNo}</span>
+            <span className="font-semibold">Bord #{tableNo}</span>
           </div>
-          <span className="text-white/85 text-sm">Choose your items</span>
+          <span className="text-white/85 text-sm">Välj dina rätter</span>
         </div>
 
         {/* People counters */}
