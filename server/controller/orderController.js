@@ -1,132 +1,7 @@
-// // server/controller/orderController.js
-// const Order = require("../model/orderModel");
-// const menu = require("../data/menu.json");
-// const tables = require("../data/tables.json");
-
-// // Build a fast lookup: { [id:number]: { id, name, price? } }
-// const menuIndex = (() => {
-//   const idx = Object.create(null);
-//   // menu is an array of categories: { category, items: [...] }
-//   for (const section of menu) {
-//     for (const it of section.items) {
-//       // You can add prices to menu.json; if not, default to 0
-//       idx[Number(it.id)] = {
-//         id: Number(it.id),
-//         name: it.name,
-//         price: Number(it.price ?? 0),
-//       };
-//     }
-//   }
-//   return idx;
-// })();
-
-// // Allowed tables
-// const tableSet = new Set(tables.map(Number));
-
-// // helpers
-// function toMoney(n) {
-//   // round to 2 decimals to avoid floating drift (change if using integers/paise)
-//   return Math.round((Number(n) || 0) * 100) / 100;
-// }
-
-// function sanitizeItems(clientItems = []) {
-//   const sanitized = [];
-//   for (const raw of clientItems) {
-//     const id = Number(raw.id);
-//     const found = menuIndex[id];
-//     if (!found) continue; // skip unknown items
-
-//     // force server truth for name & price; never trust client
-//     const qty = Math.max(1, parseInt(raw.qty, 10) || 0);
-//     if (!qty) continue;
-
-//     sanitized.push({
-//       id: found.id,
-//       name: found.name,
-//       price: toMoney(found.price),
-//       qty,
-//     });
-//   }
-//   return sanitized;
-// }
-
-// exports.createOrder = async (req, res) => {
-//   try {
-//     const { tableNo: tableNoRaw, items: clientItems, adult, Barn1, Barn2 } = req.body;
-
-//     const tableNo = Number(tableNoRaw);
-//     if (!tableNo || !tableSet.has(tableNo)) {
-//       return res.status(400).json({ message: "Invalid or missing table number" });
-//     }
-
-//     const items = sanitizeItems(clientItems);
-//     if (!Array.isArray(items) || items.length === 0) {
-//       return res.status(400).json({ message: "No valid items in order" });
-//     }
-
-//     // totals
-//     const total = toMoney(items.reduce((sum, item) => sum + item.price * item.qty, 0));
-
-//     const SERVICE_TAX_RATE = process.env.SERVICE_TAX_RATE
-//       ? Number(process.env.SERVICE_TAX_RATE)
-//       : 0.05; // 5%
-//     const GST_RATE = process.env.GST_RATE
-//       ? Number(process.env.GST_RATE)
-//       : 0.12; // 12%
-
-//     const serviceTax = toMoney(total * SERVICE_TAX_RATE);
-//     const GST = toMoney(total * GST_RATE);
-//     const payable = toMoney(total + serviceTax + GST);
-
-//     const order = await Order.create({
-//       tableNo,
-//       items,
-//       total,
-//       serviceTax,
-//       GST,
-//       payable,
-//       adult: Number(adult || 0),
-//       Barn1: Number(Barn1 || 0),
-//       Barn2: Number(Barn2 || 0),
-//     });
-
-//     return res.status(201).json({ success: true, order });
-//   } catch (err) {
-//     console.error("Error creating order:", err);
-//     return res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// exports.getAllOrders = async (_req, res) => {
-//   try {
-//     const orders = await Order.find().sort({ createdAt: -1 });
-//     return res.json({ success: true, orders });
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// exports.getOrdersByTable = async (req, res) => {
-//   try {
-//     const tableNo = Number(req.params.tableNo);
-//     if (!tableNo || !tableSet.has(tableNo)) {
-//       return res.status(400).json({ message: "Invalid table number" });
-//     }
-//     const orders = await Order.find({ tableNo }).sort({ createdAt: -1 });
-//     return res.json({ success: true, orders });
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// };
-
-
-
-///////////
-
 // server/controller/orderController.js
-const Order = require("../model/orderModel");
-const menu = require("../data/menu.json");
-const tables = require("../data/tables.json");
+const Order = require('../model/orderModel');
+const menu = require('../data/menu.json');
+const tables = require('../data/tables.json');
 
 // ------- Fast menu lookup: { [id:number]: { id, name, price } }
 const menuIndex = (() => {
@@ -161,7 +36,7 @@ function sanitizeItems(clientItems = []) {
     if (!found) continue;
     const qty = toQty(raw.qty);
     out.push({
-      id: String(found.id),           // store id as string consistently
+      id: String(found.id), // store id as string consistently
       name: found.name,
       price: toMoney(found.price),
       qty,
@@ -223,8 +98,12 @@ function mergeItems(existing = [], incoming = []) {
 }
 
 function computeTotals(items) {
-  const total = toMoney(items.reduce((sum, item) => sum + item.price * item.qty, 0));
-  const SERVICE_TAX_RATE = process.env.SERVICE_TAX_RATE ? Number(process.env.SERVICE_TAX_RATE) : 0.05; // 5%
+  const total = toMoney(
+    items.reduce((sum, item) => sum + item.price * item.qty, 0)
+  );
+  const SERVICE_TAX_RATE = process.env.SERVICE_TAX_RATE
+    ? Number(process.env.SERVICE_TAX_RATE)
+    : 0.05; // 5%
   const GST_RATE = process.env.GST_RATE ? Number(process.env.GST_RATE) : 0.12; // 12%
   const serviceTax = toMoney(total * SERVICE_TAX_RATE);
   const GST = toMoney(total * GST_RATE);
@@ -235,20 +114,30 @@ function computeTotals(items) {
 // ============ UPSERT ORDER (status: "placed") ============
 exports.upsertOrder = async (req, res) => {
   try {
-    const { tableNo: tableNoRaw, items: clientItems, adult, Barn1, Barn2 } = req.body;
+    const {
+      tableNo: tableNoRaw,
+      items: clientItems,
+      adult,
+      Barn1,
+      Barn2,
+    } = req.body;
 
     const tableNo = Number(tableNoRaw);
     if (!tableNo || !tableSet.has(tableNo)) {
-      return res.status(400).json({ message: "Invalid or missing table number" });
+      return res
+        .status(400)
+        .json({ message: 'Invalid or missing table number' });
     }
 
     const incomingItems = sanitizeItems(clientItems);
     if (!Array.isArray(incomingItems) || incomingItems.length === 0) {
-      return res.status(400).json({ message: "No valid items in order" });
+      return res.status(400).json({ message: 'No valid items in order' });
     }
 
     // try to find an existing open order
-    let order = await Order.findOne({ tableNo, status: "placed" }).sort({ createdAt: -1 });
+    let order = await Order.findOne({ tableNo, status: 'placed' }).sort({
+      createdAt: -1,
+    });
 
     if (!order) {
       const items = normalizeStoredItems(incomingItems);
@@ -260,9 +149,9 @@ exports.upsertOrder = async (req, res) => {
         adult: toNonNegInt(adult),
         Barn1: toNonNegInt(Barn1),
         Barn2: toNonNegInt(Barn2),
-        status: "placed",
+        status: 'placed',
       });
-      return res.status(201).json({ success: true, order, mode: "created" });
+      return res.status(201).json({ success: true, order, mode: 'created' });
     }
 
     // Merge incoming into existing open order
@@ -270,9 +159,18 @@ exports.upsertOrder = async (req, res) => {
     const totals = computeTotals(mergedItems);
 
     // Overwrite people counts with provided values if present; else keep
-    const nextAdult = typeof adult !== "undefined" ? toNonNegInt(adult) : toNonNegInt(order.adult);
-    const nextBarn1 = typeof Barn1 !== "undefined" ? toNonNegInt(Barn1) : toNonNegInt(order.Barn1);
-    const nextBarn2 = typeof Barn2 !== "undefined" ? toNonNegInt(Barn2) : toNonNegInt(order.Barn2);
+    const nextAdult =
+      typeof adult !== 'undefined'
+        ? toNonNegInt(adult)
+        : toNonNegInt(order.adult);
+    const nextBarn1 =
+      typeof Barn1 !== 'undefined'
+        ? toNonNegInt(Barn1)
+        : toNonNegInt(order.Barn1);
+    const nextBarn2 =
+      typeof Barn2 !== 'undefined'
+        ? toNonNegInt(Barn2)
+        : toNonNegInt(order.Barn2);
 
     order.items = mergedItems;
     order.total = totals.total;
@@ -285,10 +183,12 @@ exports.upsertOrder = async (req, res) => {
 
     await order.save();
 
-    return res.status(200).json({ success: true, order, mode: "updated" });
+    return res.status(200).json({ success: true, order, mode: 'updated' });
   } catch (err) {
-    console.error("Error upserting order:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    console.error('Error upserting order:', err);
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: err.message });
   }
 };
 
@@ -301,25 +201,32 @@ exports.completeOrder = async (req, res) => {
     let order = null;
     if (orderId) {
       order = await Order.findById(orderId);
-      if (!order) return res.status(404).json({ message: "Order not found" });
-      if (order.status === "completed") {
+      if (!order) return res.status(404).json({ message: 'Order not found' });
+      if (order.status === 'completed') {
         return res.json({ success: true, order }); // already complete
       }
     } else {
-      if (!tableNo) return res.status(400).json({ message: "orderId or tableNo required" });
-      order = await Order.findOne({ tableNo, status: "placed" }).sort({ createdAt: -1 });
-      if (!order) return res.status(404).json({ message: "No open order to complete for this table" });
+      if (!tableNo)
+        return res.status(400).json({ message: 'orderId or tableNo required' });
+      order = await Order.findOne({ tableNo, status: 'placed' }).sort({
+        createdAt: -1,
+      });
+      if (!order)
+        return res
+          .status(404)
+          .json({ message: 'No open order to complete for this table' });
     }
 
-    order.status = "completed";
+    order.status = 'completed';
     await order.save();
     return res.json({ success: true, order });
   } catch (err) {
-    console.error("Error completing order:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    console.error('Error completing order:', err);
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: err.message });
   }
 };
-
 
 // ============ REOPEN ORDER (set status back to 'placed') ============
 exports.reopenOrder = async (req, res) => {
@@ -330,23 +237,30 @@ exports.reopenOrder = async (req, res) => {
     let order = null;
     if (orderId) {
       order = await Order.findById(orderId);
-      if (!order) return res.status(404).json({ message: "Order not found" });
+      if (!order) return res.status(404).json({ message: 'Order not found' });
     } else {
-      if (!tableNo) return res.status(400).json({ message: "orderId or tableNo required" });
+      if (!tableNo)
+        return res.status(400).json({ message: 'orderId or tableNo required' });
       // reopen the latest completed order for this table
-      order = await Order.findOne({ tableNo, status: "completed" }).sort({ createdAt: -1 });
-      if (!order) return res.status(404).json({ message: "No completed order to reopen for this table" });
+      order = await Order.findOne({ tableNo, status: 'completed' }).sort({
+        createdAt: -1,
+      });
+      if (!order)
+        return res
+          .status(404)
+          .json({ message: 'No completed order to reopen for this table' });
     }
 
-    order.status = "placed";
+    order.status = 'placed';
     await order.save();
     return res.json({ success: true, order });
   } catch (err) {
-    console.error("Error reopening order:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    console.error('Error reopening order:', err);
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: err.message });
   }
 };
-
 
 // ============ READS ============
 exports.getAllOrders = async (_req, res) => {
@@ -354,7 +268,9 @@ exports.getAllOrders = async (_req, res) => {
     const orders = await Order.find().sort({ createdAt: -1 });
     return res.json({ success: true, orders });
   } catch (err) {
-    return res.status(500).json({ message: "Server error", error: err.message });
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: err.message });
   }
 };
 
@@ -362,11 +278,13 @@ exports.getOrdersByTable = async (req, res) => {
   try {
     const tableNo = Number(req.params.tableNo);
     if (!tableNo || !tableSet.has(tableNo)) {
-      return res.status(400).json({ message: "Invalid table number" });
+      return res.status(400).json({ message: 'Invalid table number' });
     }
     const orders = await Order.find({ tableNo }).sort({ createdAt: -1 });
     return res.json({ success: true, orders });
   } catch (err) {
-    return res.status(500).json({ message: "Server error", error: err.message });
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: err.message });
   }
 };
