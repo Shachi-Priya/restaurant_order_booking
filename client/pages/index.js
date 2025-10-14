@@ -574,7 +574,7 @@ export default function Home() {
           <div className="w-full h-full sm:h-56 md:h-64 lg:h-72">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/menu/58.jpg"
+              src="/menu/saigo.jpg"
               alt="Restaurant ambiance"
               className="w-full h-full object-cover"
             />
