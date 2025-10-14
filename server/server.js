@@ -7,6 +7,7 @@ const {
   reopenOrder,
   getAllOrders,
   getOrdersByTable,
+  deleteOrderById
 } = require("./controller/orderController");
 
 const app = express();
@@ -31,6 +32,9 @@ app.post("/api/orders/reopen", reopenOrder);
 app.get("/api/orders", getAllOrders);
 // Fetch orders by table number
 app.get("/api/orders/:tableNo", getOrdersByTable);
+// NEW: delete by id
+app.delete("/api/orders/:orderId", deleteOrderById);
+
 
 // ---------- Start server ----------
 app.listen(PORT, () => {

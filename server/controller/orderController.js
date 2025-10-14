@@ -288,3 +288,24 @@ exports.getOrdersByTable = async (req, res) => {
       .json({ message: 'Server error', error: err.message });
   }
 };
+
+
+// ============ DELETE ORDER ============
+exports.deleteOrderById = async (req, res) => {
+  try {
+    const orderId = String(req.params.orderId || "").trim();
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: "orderId is required" });
+    }
+
+    const deleted = await Order.findByIdAndDelete(orderId);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    return res.json({ success: true, order: deleted, deletedId: deleted._id });
+  } catch (err) {
+    console.error("Error deleting order:", err);
+    return res.status(500).json({ success: false, message: "Server error", error: err.message });
+  }
+};
