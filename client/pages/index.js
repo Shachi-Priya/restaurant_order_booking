@@ -406,11 +406,11 @@ export default function Home() {
                     return (
                       <div
                         key={it.id}
-                        className="min-w-[260px] sm:min-w-[280px] premium-card rounded-2xl overflow-hidden flex-shrink-0"
+                        className="min-w-[260px] sm:min-w-[280px] rounded-2xl overflow-hidden flex-shrink-0 bg-[#1a2f28] border border-white/10 shadow-lg"
                       >
                         {/* Image area (clickable) with Next.js Image */}
                         <div
-                          className="relative w-full aspect-[4/3] cursor-pointer overflow-hidden bg-black/20"
+                          className="relative w-full aspect-[4/3] cursor-pointer overflow-hidden"
                           onClick={() => setSelectedItem(it)}
                         >
                           <Image
@@ -418,7 +418,7 @@ export default function Home() {
                             alt={it.name}
                             fill
                             sizes="(max-width: 640px) 260px, 280px"
-                            className="object-cover img-hover"
+                            className="object-cover hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                             placeholder="blur"
                             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQCEAwEPwAB//9k="
@@ -426,29 +426,27 @@ export default function Home() {
                               e.currentTarget.style.opacity = '0';
                             }}
                           />
-                          {/* Subtle gradient overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                         </div>
 
-                        {/* Footer with glass effect */}
-                        <div className="px-4 py-3 flex items-center justify-between bg-black/20 backdrop-blur-sm border-t border-white/5">
-                          <div className="font-semibold text-white/95 truncate pr-3 text-sm sm:text-base">
+                        {/* Footer - solid consistent design */}
+                        <div className="h-14 px-4 flex items-center justify-between bg-[#1a2f28] border-t border-white/10">
+                          <span className="font-semibold text-white truncate pr-3 text-sm">
                             {it.name}
-                          </div>
+                          </span>
 
-                          <div className="qty-control flex items-center gap-2 rounded-full px-2 py-1">
+                          <div className="flex items-center gap-1 bg-[#0f1f1a] rounded-full px-1 py-1 border border-white/10">
                             <button
-                              className="qty-btn w-8 h-8 flex items-center justify-center rounded-full text-white text-lg font-bold"
+                              className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-base font-medium transition-colors"
                               onClick={() => remove(it)}
                               aria-label="decrease"
                             >
                               −
                             </button>
-                            <span className="font-bold text-white min-w-[20px] text-center">
+                            <span className="font-bold text-white w-6 text-center text-sm">
                               {qty}
                             </span>
                             <button
-                              className="qty-btn w-8 h-8 flex items-center justify-center rounded-full text-white text-lg font-bold"
+                              className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-base font-medium transition-colors"
                               onClick={() => add(it)}
                               aria-label="increase"
                             >
