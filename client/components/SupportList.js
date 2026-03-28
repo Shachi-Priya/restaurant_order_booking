@@ -1,6 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { RotateCcw } from 'lucide-react';
 import OrderSlideSwitch from './OrderSlideSwitch';
+import menuData from '../data/menu.json';
+
+// Build a lookup: item id/name -> { category, image }
+function buildMenuLookup(menu) {
+  const byId = {};
+  const byName = {};
+  for (const cat of menu) {
+    for (const item of cat.items) {
+      const entry = {
+        category: cat.category,
+        image: item.image || '/menu/default.jpg',
+      };
+      if (item.id) byId[String(item.id)] = entry;
+      if (item.name) byName[item.name.toLowerCase()] = entry;
+    }
+  }
+  return { byId, byName };
+}
+
+function lookupItem(lookup, item) {
+  if (item.id && lookup.byId[String(item.id)])
+    return lookup.byId[String(item.id)];
+  if (item.name && lookup.byName[item.name.toLowerCase()])
+    return lookup.byName[item.name.toLowerCase()];
+  return { category: 'Other', image: '/menu/default.jpg' };
+}
+
+// Group order items by category
+function groupByCategory(items, lookup) {
+  const groups = {};
+  for (const it of items) {
+    const info = lookupItem(lookup, it);
+    if (!groups[info.category]) groups[info.category] = [];
+    groups[info.category].push({ ...it, image: info.image });
+  }
+  return groups;
+}
 
 export default function SupportList() {
   const [orders, setOrders] = useState([]);
@@ -12,6 +49,8 @@ export default function SupportList() {
   const isFetchingRef = useRef(false);
   const countdownIntervalRef = useRef(null);
   const RELOAD_INTERVAL = 10; // seconds
+
+  const menuLookup = useMemo(() => buildMenuLookup(menuData), []);
 
   // ---- helpers: placed time detection + formatting ----
   const getPlacedDate = (o) => {
@@ -28,7 +67,14 @@ export default function SupportList() {
       }
 
       // Common timestamp fields
-      const candidates = [o?.placedAt, o?.createdAt, o?.created_at, o?.created, o?.timestamp, o?.date];
+      const candidates = [
+        o?.placedAt,
+        o?.createdAt,
+        o?.created_at,
+        o?.created,
+        o?.timestamp,
+        o?.date,
+      ];
       for (const c of candidates) {
         if (!c) continue;
         const d = new Date(c);
@@ -68,7 +114,9 @@ export default function SupportList() {
     isFetchingRef.current = true;
     setLoadingList(true);
     try {
-      const res = await fetch('/api/orderHandler?list=true', { cache: 'no-store' });
+      const res = await fetch('/api/orderHandler?list=true', {
+        cache: 'no-store',
+      });
       const data = await res.json();
       setOrders(Array.isArray(data?.orders) ? data.orders : []);
       setLastUpdated(new Date());
@@ -99,24 +147,26 @@ export default function SupportList() {
   }, []);
 
   const updateLocalStatus = (id, nextStatus) => {
-    setOrders((prev) => prev.map((o) => (o._id === id ? { ...o, status: nextStatus } : o)));
+    setOrders((prev) =>
+      prev.map((o) => (o._id === id ? { ...o, status: nextStatus } : o)),
+    );
   };
 
   const deleteOrder = async (orderId) => {
     if (!orderId) return;
-    const yes = confirm("Delete this order permanently?");
+    const yes = confirm('Delete this order permanently?');
     if (!yes) return;
 
     setDeletingId(orderId);
     try {
-      const res = await fetch("/api/orderHandler?action=delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/orderHandler?action=delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),
       });
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(data?.message || "Failed to delete order");
+        throw new Error(data?.message || 'Failed to delete order');
       }
       // Optimistically remove from local list
       setOrders((prev) => prev.filter((o) => o._id !== orderId));
@@ -126,7 +176,6 @@ export default function SupportList() {
       setDeletingId(null);
     }
   };
-
 
   return (
     <div className="space-y-4">
@@ -142,7 +191,8 @@ export default function SupportList() {
           )}
 
           <span className="text-xs text-white/60">
-            Reloading in <span className="font-semibold text-white">{secondsLeft}s</span>
+            Reloading in{' '}
+            <span className="font-semibold text-white">{secondsLeft}s</span>
           </span>
 
           <button
@@ -154,7 +204,9 @@ export default function SupportList() {
             <RotateCcw
               className={`w-4 h-4 ${loadingList ? 'animate-spin text-blue-300' : 'text-white'}`}
             />
-            <span className="hidden sm:inline">{loadingList ? 'Reloading...' : 'Reload'}</span>
+            <span className="hidden sm:inline">
+              {loadingList ? 'Reloading...' : 'Reload'}
+            </span>
           </button>
         </div>
       </div>
@@ -192,7 +244,9 @@ export default function SupportList() {
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-extrabold">Table #{o.tableNo}</h3>
+                    <h3 className="text-lg font-extrabold">
+                      Table #{o.tableNo}
+                    </h3>
 
                     <button
                       onClick={() => deleteOrder(o._id)}
@@ -200,21 +254,25 @@ export default function SupportList() {
                       className={`px-2.5 py-1 rounded-lg text-xs border font-medium transition-all
                         ${
                           deletingId === o._id
-                            ? "bg-red-800 border-red-700 text-red-200 cursor-wait"
-                            : "bg-red-700 border-red-600 text-white hover:bg-red-800"
+                            ? 'bg-red-800 border-red-700 text-red-200 cursor-wait'
+                            : 'bg-red-700 border-red-600 text-white hover:bg-red-800'
                         }`}
                       title="Delete order"
                       aria-label={`Delete order for table ${o.tableNo}`}
                     >
-                      {deletingId === o._id ? "Deleting..." : "Delete"}
+                      {deletingId === o._id ? 'Deleting...' : 'Delete'}
                     </button>
                   </div>
 
                   <div className="text-white/70 text-xs mt-1">
-                    Placed:{" "}
+                    Placed:{' '}
                     {placedAtDate ? (
-                      <time dateTime={placedAtDate.toISOString()} title={placedAbs}>
-                        {placedAbs} <span className="opacity-70">({placedRel})</span>
+                      <time
+                        dateTime={placedAtDate.toISOString()}
+                        title={placedAbs}
+                      >
+                        {placedAbs}{' '}
+                        <span className="opacity-70">({placedRel})</span>
                       </time>
                     ) : (
                       <span className="opacity-70">—</span>
@@ -226,10 +284,11 @@ export default function SupportList() {
                   orderId={o._id}
                   tableNo={o.tableNo}
                   status={status}
-                  onStatusChange={(nextStatus) => updateLocalStatus(o._id, nextStatus)}
+                  onStatusChange={(nextStatus) =>
+                    updateLocalStatus(o._id, nextStatus)
+                  }
                 />
               </div>
-
 
               {/* People chips */}
               <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
@@ -248,13 +307,61 @@ export default function SupportList() {
               </div>
 
               {Array.isArray(o.items) && o.items.length > 0 ? (
-                <ul className="text-white/90 mb-3 leading-6">
-                  {o.items.map((it, i) => (
-                    <li key={i}>
-                      {it.name} × {it.qty}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mb-3">
+                  {/* Horizontal scrollable categories */}
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(groupByCategory(o.items, menuLookup)).map(
+                      ([category, items]) => (
+                        <div
+                          key={category}
+                          className="rounded-xl bg-black/25 border border-white/10 p-2.5 min-w-[140px]"
+                        >
+                          {/* Category header */}
+                          <div className="mb-2">
+                            <span className="px-2 py-0.5 rounded-full bg-amber-500/25 border border-amber-500/40 text-amber-200 text-[10px] font-bold uppercase tracking-wider">
+                              {category}
+                            </span>
+                            <span className="text-[10px] text-white/40 ml-1.5">
+                              {items.length}
+                            </span>
+                          </div>
+                          {/* Items stacked inside this category card */}
+                          <div className="space-y-1.5">
+                            {items.map((it, i) => (
+                              <div
+                                key={i}
+                                className="flex items-center gap-2 bg-white/8 rounded-lg px-2 py-1"
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={it.image}
+                                  alt={it.name}
+                                  className="w-7 h-7 rounded-md object-cover flex-shrink-0"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/menu/default.jpg';
+                                  }}
+                                />
+                                <span className="text-white text-xs font-medium truncate">
+                                  {it.name}
+                                </span>
+                                <span className="text-amber-300/90 text-[10px] font-bold ml-auto flex-shrink-0">
+                                  ×{it.qty}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                  {/* Total */}
+                  <div className="mt-2 pt-2 border-t border-white/10">
+                    <span className="text-white/50 text-xs">
+                      Total: {o.items.reduce((s, it) => s + (it.qty || 1), 0)}{' '}
+                      items
+                    </span>
+                  </div>
+                </div>
               ) : (
                 <div className="text-white/70 mb-3 text-sm">No items.</div>
               )}
@@ -262,9 +369,13 @@ export default function SupportList() {
               <div className="text-white/70 text-sm">
                 Status:{' '}
                 {isComplete ? (
-                  <span className="text-green-300 font-semibold">Completed</span>
+                  <span className="text-green-300 font-semibold">
+                    Completed
+                  </span>
                 ) : (
-                  <span className="text-red-300 font-semibold">Not completed</span>
+                  <span className="text-red-300 font-semibold">
+                    Not completed
+                  </span>
                 )}
               </div>
             </article>
