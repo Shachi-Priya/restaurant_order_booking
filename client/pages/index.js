@@ -404,20 +404,22 @@ export default function Home() {
                     const qty = cart[it.id] || 0;
                     const img = it.image || `/menu/${it.id}.jpg`;
                     return (
-                      <div
+                      <article
                         key={it.id}
-                        className="w-[160px] sm:w-[220px] md:w-[260px] flex-shrink-0 rounded-xl overflow-hidden bg-[#1a2f28] border border-white/10 shadow-lg"
+                        style={{ width: 160, minWidth: 160, maxWidth: 160 }}
+                        className="flex-shrink-0 rounded-xl overflow-hidden bg-[#1a2f28] border border-white/10 shadow-lg sm:!w-[220px] sm:!min-w-[220px] sm:!max-w-[220px] md:!w-[260px] md:!min-w-[260px] md:!max-w-[260px]"
                       >
-                        {/* Image area - fixed height for consistency */}
+                        {/* Image area - explicit fixed height */}
                         <div
-                          className="relative h-[160px] sm:h-[200px] md:h-[220px] w-full cursor-pointer overflow-hidden bg-[#0f1f1a]"
+                          style={{ height: 140 }}
+                          className="relative w-full cursor-pointer overflow-hidden bg-[#0f1f1a] sm:!h-[180px] md:!h-[200px]"
                           onClick={() => setSelectedItem(it)}
                         >
                           <Image
                             src={img}
                             alt={it.name}
                             fill
-                            sizes="(max-width: 640px) 160px, (max-width: 768px) 220px, 260px"
+                            sizes="160px"
                             className="object-cover hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                             placeholder="blur"
@@ -428,8 +430,11 @@ export default function Home() {
                           />
                         </div>
 
-                        {/* Footer - fixed height, solid design */}
-                        <div className="h-11 sm:h-12 px-2 sm:px-3 flex items-center justify-between bg-[#1a2f28] border-t border-white/10">
+                        {/* Footer - explicit fixed height */}
+                        <div
+                          style={{ height: 44 }}
+                          className="px-2 flex items-center justify-between bg-[#1a2f28] border-t border-white/10 sm:!h-12 sm:px-3"
+                        >
                           <span className="font-medium text-white truncate pr-2 text-[11px] sm:text-xs leading-tight">
                             {it.name}
                           </span>
@@ -454,7 +459,7 @@ export default function Home() {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      </article>
                     );
                   })}
                 </div>
