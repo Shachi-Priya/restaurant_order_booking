@@ -245,40 +245,44 @@ export default function Home() {
 
   // ---------- Main page ----------
   return (
-    <div className="min-h-screen bg-[#244a38] text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#1a3a2e] via-[#1d3f32] to-[#152b23] text-white">
       <main className="max-w-5xl mx-auto px-4 py-4">
         {/* HERO IMAGE */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
-          <div className="w-full h-full sm:h-56 md:h-64 lg:h-72">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+        <div className="hero-premium">
+          <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 relative">
+            <Image
               src="/menu/saigo.jpg"
               alt="Restaurant ambiance"
-              className="w-full h-full object-cover"
+              fill
+              priority
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover"
             />
           </div>
         </div>
 
         {/* Table # and hint (compact, under hero) */}
-        <div className="mt-3 flex items-center gap-3">
-          <div className="px-3 py-1 rounded-full bg-white/10 border border-white/15">
-            <span className="font-semibold">Bord #{tableNo}</span>
+        <div className="mt-4 flex items-center gap-3">
+          <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 shadow-lg shadow-amber-500/10">
+            <span className="font-bold text-amber-200">Bord #{tableNo}</span>
           </div>
-          <span className="text-white/85 text-sm">Välj dina rätter</span>
+          <span className="text-white/70 text-sm font-medium">
+            Välj dina rätter
+          </span>
         </div>
 
         {/* People counters */}
-        <div className="mt-4 bg-[#244a38]/50 border border-white/10 rounded-xl p-4 backdrop-blur-md">
-          <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+        <div className="mt-5 premium-card p-5">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             {/* Adult Dropdown */}
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-white/90">
-                ADULT
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] sm:text-[11px] font-bold text-amber-300/90 tracking-wide uppercase">
+                Adult
               </label>
 
               <select
                 ref={adultRef}
-                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                className="select-premium w-full text-white rounded-xl p-2.5 text-sm sm:text-base"
                 value={adult}
                 onChange={(e) => setAdult(Number(e.target.value))}
               >
@@ -287,7 +291,7 @@ export default function Home() {
                   <option
                     key={i + 1}
                     value={i + 1}
-                    className="bg-[#244a38] text-white "
+                    className="bg-[#1d3f32] text-white"
                   >
                     {i + 1}
                   </option>
@@ -296,12 +300,12 @@ export default function Home() {
             </div>
 
             {/* Barn 7–12 ÅR Dropdown */}
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-white/90">
-                BARN 7–12 ÅR
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] sm:text-[11px] font-bold text-amber-300/90 tracking-wide uppercase">
+                Barn 7–12 ÅR
               </label>
               <select
-                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                className="select-premium w-full text-white rounded-xl p-2.5 text-sm sm:text-base"
                 value={barn1}
                 onChange={(e) => setBarn1(Number(e.target.value))}
               >
@@ -310,7 +314,7 @@ export default function Home() {
                   <option
                     key={i + 1}
                     value={i + 1}
-                    className="bg-[#244a38] text-white"
+                    className="bg-[#1d3f32] text-white"
                   >
                     {i + 1}
                   </option>
@@ -319,12 +323,12 @@ export default function Home() {
             </div>
 
             {/* Barn 4–6 ÅR Dropdown */}
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-white/90">
-                BARN 4–6 ÅR
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] sm:text-[11px] font-bold text-amber-300/90 tracking-wide uppercase">
+                Barn 4–6 ÅR
               </label>
               <select
-                className="w-full bg-transparent border border-white/30 text-white rounded-lg p-2 focus:border-white focus:ring-1 focus:ring-white/40 outline-none transition"
+                className="select-premium w-full text-white rounded-xl p-2.5 text-sm sm:text-base"
                 value={barn2}
                 onChange={(e) => setBarn2(Number(e.target.value))}
               >
@@ -333,7 +337,7 @@ export default function Home() {
                   <option
                     key={i + 1}
                     value={i + 1}
-                    className="bg-[#244a38] text-white"
+                    className="bg-[#1d3f32] text-white"
                   >
                     {i + 1}
                   </option>
@@ -343,24 +347,25 @@ export default function Home() {
           </div>
 
           {showPeopleError && (
-            <p className="text-red-300 text-sm text-center mt-3 animate-fadeIn">
+            <p className="text-red-300 text-sm text-center mt-4 animate-fadeIn font-medium">
               Please select at least one person (Adult or Barn) to continue.
             </p>
           )}
         </div>
 
         {/* Category chips (NORMAL, non-sticky) */}
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+        <div className="mt-5 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {categories.map((sec, i) => {
             const id = slugify(sec.category);
             const count = sectionCount(sec);
+            const isActive = i === 0;
             return (
               <button
                 key={id}
-                className={`px-5 py-2 rounded-full whitespace-nowrap transition-colors ${
-                  i === 0
-                    ? 'bg-white text-[#244a38] font-semibold'
-                    : 'bg-white/10 text-white border border-white/20'
+                className={`px-4 py-2.5 rounded-full whitespace-nowrap font-semibold text-sm transition-all ${
+                  isActive
+                    ? 'chip-premium active'
+                    : 'chip-premium text-white/80'
                 }`}
                 onClick={() => {
                   const el = sectionRefs.current[id];
@@ -375,7 +380,7 @@ export default function Home() {
         </div>
 
         {/* Sections (horizontal scroll cards) */}
-        <div className="mt-4 space-y-10 pb-28">
+        <div className="mt-6 space-y-10 pb-32">
           {categories.map((sec) => {
             const id = slugify(sec.category);
             return (
@@ -386,57 +391,64 @@ export default function Home() {
                   sectionRefs.current[id] = el;
                 }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-bold text-xl">{sec.category}</h2>
-                  <span className="text-sm opacity-80">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="section-title text-xl">{sec.category}</h2>
+                  <span className="text-sm text-white/60 font-medium">
                     {sectionCount(sec)} selected
                   </span>
                 </div>
 
                 {/* Horizontal row of cards */}
-                <div className="flex gap-4 overflow-x-auto pb-2">
+                <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar">
                   {sec.items.map((it) => {
                     const qty = cart[it.id] || 0;
                     const img = it.image || `/menu/${it.id}.jpg`;
                     return (
                       <div
                         key={it.id}
-                        className="min-w-[280px] bg-white/8 border border-white/10 rounded-2xl overflow-hidden flex-shrink-0"
+                        className="min-w-[260px] sm:min-w-[280px] premium-card rounded-2xl overflow-hidden flex-shrink-0"
                       >
-                        {/* Consistent image box */}
-                        {/* Image area (clickable) */}
+                        {/* Image area (clickable) with Next.js Image */}
                         <div
-                          className="relative w-full aspect-[4/3] cursor-pointer"
-                          onClick={() => setSelectedItem(it)} // 👈 new click handler
+                          className="relative w-full aspect-[4/3] cursor-pointer overflow-hidden bg-black/20"
+                          onClick={() => setSelectedItem(it)}
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             src={img}
                             alt={it.name}
-                            className="absolute inset-0 w-full h-full object-cover hover:opacity-90 transition-opacity"
+                            fill
+                            sizes="(max-width: 640px) 260px, 280px"
+                            className="object-cover img-hover"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQCEAwEPwAB//9k="
                             onError={(e) => {
-                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.style.opacity = '0';
                             }}
                           />
+                          {/* Subtle gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                         </div>
 
-                        {/* Footer */}
-                        <div className="px-3 h-16 flex items-center justify-between rounded-b-2xl border-t border-white/10 bg-white/6 backdrop-blur-md">
-                          <div className="font-semibold truncate pr-3">
+                        {/* Footer with glass effect */}
+                        <div className="px-4 py-3 flex items-center justify-between bg-black/20 backdrop-blur-sm border-t border-white/5">
+                          <div className="font-semibold text-white/95 truncate pr-3 text-sm sm:text-base">
                             {it.name}
                           </div>
 
-                          <div className="flex items-center gap-2 rounded-full px-2 py-1 bg-white/8 ring-1 ring-white/15">
+                          <div className="qty-control flex items-center gap-2 rounded-full px-2 py-1">
                             <button
-                              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/8 ring-1 ring-white/20 text-white"
+                              className="qty-btn w-8 h-8 flex items-center justify-center rounded-full text-white text-lg font-bold"
                               onClick={() => remove(it)}
                               aria-label="decrease"
                             >
                               −
                             </button>
-                            <span className="font-bold">{qty}</span>
+                            <span className="font-bold text-white min-w-[20px] text-center">
+                              {qty}
+                            </span>
                             <button
-                              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/8 ring-1 ring-white/20 text-white"
+                              className="qty-btn w-8 h-8 flex items-center justify-center rounded-full text-white text-lg font-bold"
                               onClick={() => add(it)}
                               aria-label="increase"
                             >
@@ -455,20 +467,28 @@ export default function Home() {
       </main>
 
       {/* Floating order bar */}
-      <div className="fixed bottom-4 left-0 right-0">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="bg-white text-[#244a38] rounded-2xl p-4 flex items-center justify-between shadow-lg">
-            <div className="font-semibold">Artiklar: {lines.length}</div>
-            <div className="flex gap-3">
+      <div className="fixed bottom-4 left-0 right-0 z-40 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="floating-bar rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <span className="text-amber-400 font-bold">{lines.length}</span>
+              </div>
+              <div>
+                <div className="font-bold text-white">Artiklar</div>
+                <div className="text-xs text-white/50">i din beställning</div>
+              </div>
+            </div>
+            <div className="flex gap-2 sm:gap-3">
               <button
-                className="px-5 py-2 rounded-2xl bg-[#102f29] text-white font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 flex items-center gap-2"
+                className="btn-premium px-4 sm:px-6 py-2.5 rounded-xl text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 onClick={placeOrder}
                 disabled={lines.length === 0 || placing}
               >
                 {placing ? (
                   <>
                     <span className="spinner h-4 w-4" aria-hidden />
-                    Placing…
+                    <span className="hidden sm:inline">Placerar...</span>
                   </>
                 ) : (
                   'Lägg beställning'
@@ -476,9 +496,8 @@ export default function Home() {
               </button>
 
               <button
-                className="btn1 liquid"
+                className="px-4 sm:px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white font-semibold text-sm sm:text-base hover:bg-white/15 transition-all"
                 onClick={completeOrder}
-                style={{ fontWeight: 600, fontSize: '1rem' }}
               >
                 Slutför
               </button>
@@ -489,50 +508,41 @@ export default function Home() {
       {/* === Image Preview Modal === */}
       {selectedItem && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setSelectedItem(null)}
         >
           <div
-            className="bg-white rounded-2xl overflow-hidden w-[90%] max-w-lg h-[75vh] flex flex-col animate-fadeIn"
+            className="premium-card overflow-hidden w-full max-w-lg max-h-[85vh] flex flex-col animate-fadeIn"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full h-[65%]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <div className="relative w-full aspect-[4/3]">
+              <Image
                 src={selectedItem.image || `/menu/${selectedItem.id}.jpg`}
                 alt={selectedItem.name}
-                className="absolute inset-0 w-full h-full object-cover"
+                fill
+                sizes="(max-width: 640px) 100vw, 512px"
+                className="object-cover"
+                priority
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             </div>
-            <div className="flex-1 p-4 text-[#244a38] text-center flex flex-col justify-center">
-              <h3 className="text-xl font-semibold mb-1">
+            <div className="p-5 text-center bg-gradient-to-b from-[#1a3a2e] to-[#152b23]">
+              <h3 className="text-xl font-bold text-white mb-2">
                 {selectedItem.name}
               </h3>
               {selectedItem.desc && (
-                <p className="text-gray-600 text-sm mb-2">
+                <p className="text-white/70 text-sm mb-3">
                   {selectedItem.desc}
                 </p>
               )}
-              {typeof selectedItem.price === 'number' && (
-                <p className="font-bold text-lg text-[#1d3f32]">
-                  ₹{selectedItem.price}
-                </p>
-              )}
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="btn-premium px-6 py-2.5 rounded-xl mt-2"
+              >
+                Stäng
+              </button>
             </div>
           </div>
-
-          <style jsx>{`
-            @keyframes fadeIn {
-              from {
-                opacity: 0;
-                transform: scale(0.95);
-              }
-              to {
-                opacity: 1;
-                transform: scale(1);
-              }
-            }
-          `}</style>
         </div>
       )}
 
