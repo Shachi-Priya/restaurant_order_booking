@@ -17,8 +17,16 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
-// ---------- Connect to MongoDB ----------
-connectMongo();
+// ---------- Ensure MongoDB is connected before handling requests ----------
+app.use(async (_req, res, next) => {
+  try {
+    await connectMongo();
+    next();
+  } catch (err) {
+    console.error("MongoDB connection failed:", err.message);
+    res.status(503).json({ message: "Database unavailable, please try again shortly" });
+  }
+});
 
 // ---------- Routes ----------
 
@@ -37,6 +45,11 @@ app.delete("/api/orders/:orderId", deleteOrderById);
 
 
 // ---------- Start server ----------
+// Initial connection (non-blocking — server starts even if DB is temporarily down)
+connectMongo()
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("Initial MongoDB connection failed (will retry on requests):", err.message));
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

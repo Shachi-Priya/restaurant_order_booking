@@ -131,8 +131,8 @@ export default function Home() {
 
     setPlacing(true);
     const controller = new AbortController();
-    // optional: auto-timeout after 20s so UI never hangs
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    // auto-timeout after 40 s so UI never hangs (allows DB reconnect)
+    const timeout = setTimeout(() => controller.abort(), 40000);
 
     try {
       const payload = {

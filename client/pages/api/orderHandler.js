@@ -3,8 +3,8 @@ export default async function handler(req, res) {
   const RAW_BASE = process.env.SERVER_BASE_URL || "http://localhost:8000";
   const BASE = RAW_BASE.replace(/\/+$/, ""); // strip trailing slash
 
-  // Small fetch timeout helper (Node 18+ has global fetch)
-  const fetchWithTimeout = async (url, options = {}, ms = 15000) => {
+  // Fetch timeout helper — 30 s allows MongoDB to reconnect after idle
+  const fetchWithTimeout = async (url, options = {}, ms = 30000) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), ms);
     try {
