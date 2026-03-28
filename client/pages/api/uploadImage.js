@@ -35,8 +35,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Convert base64 to buffer
-    const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+    // Convert base64 to buffer (handle all MIME types like svg+xml, jpeg, png, etc.)
+    const base64Data = imageData.replace(/^data:[^;]+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
 
     // Generate unique filename
