@@ -41,8 +41,18 @@ export default async function handler(req, res) {
     const response = await fetch(url, fetchOptions);
     clearTimeout(timeout);
 
-    const data = await response.json();
-    res.status(response.status).json(data);
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      res.status(response.status).json(data);
+    } catch {
+      // Backend returned non-JSON (HTML error page etc)
+      console.error('Backend returned non-JSON:', text.substring(0, 200));
+      res.status(502).json({
+        success: false,
+        message: 'Backend not available or returned invalid response',
+      });
+    }
   } catch (err) {
     console.error('Menu API error:', err.message);
     res.status(err.name === 'AbortError' ? 504 : 500).json({

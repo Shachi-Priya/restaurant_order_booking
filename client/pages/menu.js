@@ -115,33 +115,6 @@ export default function MenuAdmin() {
     }
   };
 
-  // Seed menu from static JSON (one-time)
-  const seedMenu = async () => {
-    if (!confirm('This will replace ALL menu data. Continue?')) return;
-    setSaving(true);
-    try {
-      const menuRes = await fetch('/data/menu.json');
-      const menuData = await menuRes.json();
-
-      const res = await fetch('/api/menuHandler?action=seed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ categories: menuData }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        showMessage('Menu seeded from JSON!');
-        fetchMenu();
-      } else {
-        showMessage(data.message || 'Seed failed', 'error');
-      }
-    } catch (err) {
-      showMessage('Seed error: ' + err.message, 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   // Add category
   const addCategory = async () => {
     if (!newCategoryName.trim()) return;
@@ -350,22 +323,13 @@ export default function MenuAdmin() {
       <div className="min-h-screen bg-gradient-to-b from-[#1a3a2e] via-[#1d3f32] to-[#152b23] text-white">
         <div className="max-w-6xl mx-auto px-4 py-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent">
-                Menu Admin
-              </h1>
-              <p className="text-white/60 text-sm mt-1">
-                Manage categories & items
-              </p>
-            </div>
-            <button
-              onClick={seedMenu}
-              disabled={saving}
-              className="px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-lg text-amber-200 hover:bg-amber-500/30 transition disabled:opacity-50"
-            >
-              {saving ? 'Working...' : '↻ Reset from JSON'}
-            </button>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent">
+              Menu Admin
+            </h1>
+            <p className="text-white/60 text-sm mt-1">
+              Manage categories & items
+            </p>
           </div>
 
           {/* Message */}
