@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 
@@ -6,6 +6,7 @@ export default function MenuAdmin() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -13,25 +14,40 @@ export default function MenuAdmin() {
     categoryId: null,
     name: '',
     image: '',
+    imagePreview: '',
+    imageFile: null,
     price: 0,
   });
   const [showAddItem, setShowAddItem] = useState(null);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const fileInputRef = useRef(null);
+  const editFileInputRef = useRef(null);
+  const [editImagePreview, setEditImagePreview] = useState('');
+  const [editImageFile, setEditImageFile] = useState(null);
 
   const showMessage = (text, type = 'success') => {
     setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+    setTimeout(() => setMessage({ text: '', type: '' }), 4000);
   };
 
   const fetchMenu = useCallback(async () => {
     try {
       const res = await fetch('/api/menuHandler');
-      const data = await res.json();
-      if (data.success) {
-        setCategories(data.categories || []);
+      const text = await res.text();
+      try {
+        const data = JSON.parse(text);
+        if (data.success) {
+          setCategories(data.categories || []);
+        } else {
+          showMessage(data.message || 'Failed to load menu', 'error');
+        }
+      } catch {
+        console.error('API returned non-JSON:', text.substring(0, 200));
+        showMessage('Server not ready. Please wait and refresh.', 'error');
       }
     } catch (err) {
       console.error('Failed to fetch menu:', err);
+      showMessage('Network error: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -40,6 +56,65 @@ export default function MenuAdmin() {
   useEffect(() => {
     fetchMenu();
   }, [fetchMenu]);
+
+  // Upload image to Supabase
+  const uploadImage = async (file) => {
+    if (!file) return null;
+
+    setUploading(true);
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
+      reader.readAsDataURL(file);
+      const base64Data = await base64Promise;
+
+      const res = await fetch('/api/uploadImage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageData: base64Data,
+          fileName: file.name,
+          contentType: file.type,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        return data.url;
+      } else {
+        showMessage('Upload failed: ' + data.message, 'error');
+        return null;
+      }
+    } catch (err) {
+      showMessage('Upload error: ' + err.message, 'error');
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Handle file selection for new item
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setNewItem({ ...newItem, imageFile: file, imagePreview: previewUrl });
+    }
+  };
+
+  // Handle file selection for editing item
+  const handleEditFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setEditImageFile(file);
+      setEditImagePreview(previewUrl);
+    }
+  };
 
   // Seed menu from static JSON (one-time)
   const seedMenu = async () => {
@@ -139,11 +214,20 @@ export default function MenuAdmin() {
     }
   };
 
-  // Add item
+  // Add item with image upload
   const addItem = async (categoryId) => {
     if (!newItem.name.trim()) return;
     setSaving(true);
     try {
+      // Upload image first if file is selected
+      let imageUrl = newItem.image.trim() || '/menu/default.jpg';
+      if (newItem.imageFile) {
+        const uploadedUrl = await uploadImage(newItem.imageFile);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        }
+      }
+
       const res = await fetch(
         `/api/menuHandler?categoryId=${categoryId}&items=true`,
         {
@@ -151,16 +235,24 @@ export default function MenuAdmin() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: newItem.name.trim(),
-            image: newItem.image.trim() || '/menu/default.jpg',
+            image: imageUrl,
             price: parseFloat(newItem.price) || 0,
           }),
         },
       );
       const data = await res.json();
       if (data.success) {
-        showMessage('Item added!');
-        setNewItem({ categoryId: null, name: '', image: '', price: 0 });
+        showMessage('Item added successfully!');
+        setNewItem({
+          categoryId: null,
+          name: '',
+          image: '',
+          imagePreview: '',
+          imageFile: null,
+          price: 0,
+        });
         setShowAddItem(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
         fetchMenu();
       } else {
         showMessage(data.message || 'Failed', 'error');
@@ -172,10 +264,23 @@ export default function MenuAdmin() {
     }
   };
 
-  // Update item
-  const updateItem = async (categoryId, itemId, updates) => {
+  // Update item with image upload
+  const updateItem = async (
+    categoryId,
+    itemId,
+    updates,
+    hasNewImage = false,
+  ) => {
     setSaving(true);
     try {
+      // Upload new image if file is selected
+      if (hasNewImage && editImageFile) {
+        const uploadedUrl = await uploadImage(editImageFile);
+        if (uploadedUrl) {
+          updates.image = uploadedUrl;
+        }
+      }
+
       const res = await fetch(
         `/api/menuHandler?categoryId=${categoryId}&itemId=${itemId}`,
         {
@@ -188,6 +293,8 @@ export default function MenuAdmin() {
       if (data.success) {
         showMessage('Item updated!');
         setEditingItem(null);
+        setEditImageFile(null);
+        setEditImagePreview('');
         fetchMenu();
       } else {
         showMessage(data.message || 'Failed', 'error');
@@ -364,42 +471,112 @@ export default function MenuAdmin() {
                   {/* Add Item Form */}
                   {showAddItem === cat._id && (
                     <div className="p-4 bg-[#152b23] border-b border-white/10">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Item name *"
-                          value={newItem.name}
-                          onChange={(e) =>
-                            setNewItem({ ...newItem, name: e.target.value })
-                          }
-                          className="bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Image URL (optional)"
-                          value={newItem.image}
-                          onChange={(e) =>
-                            setNewItem({ ...newItem, image: e.target.value })
-                          }
-                          className="bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
-                        />
-                        <div className="flex gap-2">
-                          <input
-                            type="number"
-                            placeholder="Price"
-                            value={newItem.price}
-                            onChange={(e) =>
-                              setNewItem({ ...newItem, price: e.target.value })
-                            }
-                            className="flex-1 bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
-                          />
-                          <button
-                            onClick={() => addItem(cat._id)}
-                            disabled={saving || !newItem.name.trim()}
-                            className="btn-premium px-4 rounded-lg disabled:opacity-50"
+                      <div className="flex gap-4">
+                        {/* Image Upload Section */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 bg-[#0f1f1a] flex items-center justify-center cursor-pointer hover:border-amber-500/50 transition overflow-hidden"
+                            onClick={() => fileInputRef.current?.click()}
                           >
-                            Add
-                          </button>
+                            {newItem.imagePreview ? (
+                              <img
+                                src={newItem.imagePreview}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-center">
+                                <span className="text-2xl">📷</span>
+                                <p className="text-[10px] text-white/40 mt-1">
+                                  Click to upload
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                          />
+                        </div>
+
+                        {/* Item Details */}
+                        <div className="flex-1 space-y-2">
+                          <input
+                            type="text"
+                            placeholder="Food item name *"
+                            value={newItem.name}
+                            onChange={(e) =>
+                              setNewItem({ ...newItem, name: e.target.value })
+                            }
+                            className="w-full bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
+                          />
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Or paste image URL"
+                              value={newItem.image}
+                              onChange={(e) =>
+                                setNewItem({
+                                  ...newItem,
+                                  image: e.target.value,
+                                  imageFile: null,
+                                  imagePreview: '',
+                                })
+                              }
+                              className="flex-1 bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none text-sm"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Price"
+                              value={newItem.price}
+                              onChange={(e) =>
+                                setNewItem({
+                                  ...newItem,
+                                  price: e.target.value,
+                                })
+                              }
+                              className="w-20 bg-[#0f1f1a] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none text-sm"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => addItem(cat._id)}
+                              disabled={
+                                saving || uploading || !newItem.name.trim()
+                              }
+                              className="btn-premium px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2"
+                            >
+                              {uploading ? (
+                                <>
+                                  <span className="spinner h-4 w-4" />
+                                  Uploading...
+                                </>
+                              ) : saving ? (
+                                'Saving...'
+                              ) : (
+                                '+ Add Item'
+                              )}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowAddItem(null);
+                                setNewItem({
+                                  categoryId: null,
+                                  name: '',
+                                  image: '',
+                                  imagePreview: '',
+                                  imageFile: null,
+                                  price: 0,
+                                });
+                              }}
+                              className="px-4 py-2 bg-white/10 rounded-lg text-white/60 hover:bg-white/20 transition"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -451,6 +628,32 @@ export default function MenuAdmin() {
                             <div className="p-2">
                               {editingItem === item._id ? (
                                 <div className="space-y-2">
+                                  {/* Edit Image Upload */}
+                                  <div
+                                    className="w-full h-16 rounded border border-dashed border-white/20 bg-[#0f1f1a] flex items-center justify-center cursor-pointer hover:border-amber-500/50 transition overflow-hidden"
+                                    onClick={() =>
+                                      editFileInputRef.current?.click()
+                                    }
+                                  >
+                                    {editImagePreview ? (
+                                      <img
+                                        src={editImagePreview}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <span className="text-xs text-white/40">
+                                        📷 New photo
+                                      </span>
+                                    )}
+                                  </div>
+                                  <input
+                                    ref={editFileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleEditFileSelect}
+                                    className="hidden"
+                                  />
                                   <input
                                     type="text"
                                     defaultValue={item.name}
@@ -474,20 +677,27 @@ export default function MenuAdmin() {
                                         const image = document.getElementById(
                                           `edit-image-${item._id}`,
                                         ).value;
-                                        updateItem(cat._id, item._id, {
-                                          name,
-                                          image,
-                                        });
+                                        updateItem(
+                                          cat._id,
+                                          item._id,
+                                          { name, image },
+                                          !!editImageFile,
+                                        );
                                       }}
-                                      className="flex-1 bg-green-500/30 text-green-200 rounded py-1 text-xs hover:bg-green-500/40"
+                                      disabled={saving || uploading}
+                                      className="flex-1 bg-green-500/30 text-green-200 rounded py-1 text-xs hover:bg-green-500/40 disabled:opacity-50"
                                     >
-                                      Save
+                                      {uploading ? '...' : 'Save'}
                                     </button>
                                     <button
-                                      onClick={() => setEditingItem(null)}
+                                      onClick={() => {
+                                        setEditingItem(null);
+                                        setEditImageFile(null);
+                                        setEditImagePreview('');
+                                      }}
                                       className="flex-1 bg-white/10 text-white/60 rounded py-1 text-xs hover:bg-white/20"
                                     >
-                                      Cancel
+                                      ✕
                                     </button>
                                   </div>
                                 </div>
