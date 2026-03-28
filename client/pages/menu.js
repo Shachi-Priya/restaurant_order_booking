@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 
 export default function MenuAdmin() {
   const [categories, setCategories] = useState([]);
@@ -596,15 +595,14 @@ export default function MenuAdmin() {
                             className="bg-[#1a2f28] border border-white/10 rounded-xl overflow-hidden group"
                           >
                             {/* Item Image */}
-                            <div className="relative h-24 sm:h-28 bg-[#0f1f1a]">
-                              <Image
+                            <div className="relative h-24 sm:h-28 bg-[#0f1f1a] overflow-hidden">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
                                 src={item.image || '/menu/default.jpg'}
                                 alt={item.name}
-                                fill
-                                className="object-cover"
-                                sizes="150px"
+                                className="w-full h-full object-cover"
                                 onError={(e) => {
-                                  e.currentTarget.style.opacity = '0';
+                                  e.currentTarget.src = '/menu/default.jpg';
                                 }}
                               />
                               {/* Hover overlay */}

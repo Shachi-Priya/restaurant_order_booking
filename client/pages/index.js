@@ -47,9 +47,21 @@ export default function Home() {
   const fetchMenu = useCallback(async () => {
     try {
       const res = await fetch('/api/menuHandler');
-      const data = await res.json();
-      if (data.success && data.categories?.length > 0) {
-        setMenuData(transformDbMenu(data.categories));
+      const text = await res.text();
+      try {
+        const data = JSON.parse(text);
+        if (data.success && data.categories?.length > 0) {
+          // Merge: DB categories first, then static categories not in DB
+          const dbMenu = transformDbMenu(data.categories);
+          const dbNames = new Set(dbMenu.map((c) => c.category));
+          const merged = [
+            ...dbMenu,
+            ...staticMenuData.filter((c) => !dbNames.has(c.category)),
+          ];
+          setMenuData(merged);
+        }
+      } catch {
+        console.error('Menu API returned non-JSON');
       }
     } catch (err) {
       console.error('Failed to fetch menu, using static data:', err);

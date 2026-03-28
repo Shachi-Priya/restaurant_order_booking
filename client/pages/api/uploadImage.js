@@ -24,6 +24,17 @@ export default async function handler(req, res) {
         .json({ success: false, message: 'Image data and filename required' });
     }
 
+    // Check if Supabase is configured
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!anonKey || !supabase) {
+      // No Supabase configured — return the base64 data URL directly
+      return res.json({
+        success: true,
+        url: imageData,
+        path: 'inline',
+      });
+    }
+
     // Convert base64 to buffer
     const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
