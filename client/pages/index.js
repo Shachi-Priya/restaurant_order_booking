@@ -70,7 +70,7 @@ export default function Home() {
 
   const total = useMemo(
     () => lines.reduce((s, l) => s + l.lineTotal, 0),
-    [lines]
+    [lines],
   );
 
   const add = (it) => setCart((c) => ({ ...c, [it.id]: (c[it.id] || 0) + 1 }));
@@ -166,7 +166,7 @@ export default function Home() {
       alert(
         err?.name === 'AbortError'
           ? 'Request timed out, please try again.'
-          : 'Network error. Please try again.'
+          : 'Network error. Please try again.',
       );
     } finally {
       clearTimeout(timeout);
