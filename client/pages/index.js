@@ -399,25 +399,25 @@ export default function Home() {
                 </div>
 
                 {/* Horizontal row of cards */}
-                <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar">
+                <div className="flex gap-3 overflow-x-auto pb-3 no-scrollbar px-1">
                   {sec.items.map((it) => {
                     const qty = cart[it.id] || 0;
                     const img = it.image || `/menu/${it.id}.jpg`;
                     return (
                       <div
                         key={it.id}
-                        className="min-w-[260px] sm:min-w-[280px] rounded-2xl overflow-hidden flex-shrink-0 bg-[#1a2f28] border border-white/10 shadow-lg"
+                        className="w-[200px] sm:w-[260px] md:w-[280px] flex-shrink-0 rounded-xl overflow-hidden bg-[#1a2f28] border border-white/10 shadow-lg"
                       >
                         {/* Image area (clickable) with Next.js Image */}
                         <div
-                          className="relative w-full aspect-[4/3] cursor-pointer overflow-hidden"
+                          className="relative w-full aspect-square cursor-pointer overflow-hidden"
                           onClick={() => setSelectedItem(it)}
                         >
                           <Image
                             src={img}
                             alt={it.name}
                             fill
-                            sizes="(max-width: 640px) 260px, 280px"
+                            sizes="(max-width: 640px) 200px, (max-width: 768px) 260px, 280px"
                             className="object-cover hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                             placeholder="blur"
@@ -429,24 +429,24 @@ export default function Home() {
                         </div>
 
                         {/* Footer - solid consistent design */}
-                        <div className="h-14 px-4 flex items-center justify-between bg-[#1a2f28] border-t border-white/10">
-                          <span className="font-semibold text-white truncate pr-3 text-sm">
+                        <div className="h-12 sm:h-14 px-3 sm:px-4 flex items-center justify-between bg-[#1a2f28] border-t border-white/10">
+                          <span className="font-semibold text-white truncate pr-2 text-xs sm:text-sm">
                             {it.name}
                           </span>
 
-                          <div className="flex items-center gap-1 bg-[#0f1f1a] rounded-full px-1 py-1 border border-white/10">
+                          <div className="flex items-center gap-0.5 sm:gap-1 bg-[#0f1f1a] rounded-full px-1 py-0.5 sm:py-1 border border-white/10">
                             <button
-                              className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-base font-medium transition-colors"
+                              className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-sm sm:text-base font-medium transition-colors"
                               onClick={() => remove(it)}
                               aria-label="decrease"
                             >
                               −
                             </button>
-                            <span className="font-bold text-white w-6 text-center text-sm">
+                            <span className="font-bold text-white w-5 sm:w-6 text-center text-xs sm:text-sm">
                               {qty}
                             </span>
                             <button
-                              className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-base font-medium transition-colors"
+                              className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-sm sm:text-base font-medium transition-colors"
                               onClick={() => add(it)}
                               aria-label="increase"
                             >
