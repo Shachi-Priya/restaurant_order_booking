@@ -1,11 +1,11 @@
 import Image from 'next/image';
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
 import Shell from '../components/Shell';
 import tablesData from '../data/tables.json';
-import menuData from '../data/menu.json';
+import staticMenuData from '../data/menu.json';
 
 const SupportList = dynamic(() => import('../components/SupportList'), {
   ssr: false,
@@ -18,6 +18,19 @@ function slugify(str) {
     .replace(/[^\w-]/g, '');
 }
 
+// Transform DB format to static format for compatibility
+function transformDbMenu(dbCategories) {
+  return dbCategories.map((cat) => ({
+    category: cat.name,
+    items: (cat.items || []).map((item) => ({
+      id: item._id,
+      name: item.name,
+      image: item.image || '/menu/default.jpg',
+      price: item.price || 0,
+    })),
+  }));
+}
+
 export default function Home() {
   const router = useRouter();
   const adultRef = useRef(null);
@@ -25,12 +38,41 @@ export default function Home() {
 
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const { support, tableNo: tableNoParam } = router.query;
+  const { support, tableNo: tableNoParam, menu: menuParam } = router.query;
+
+  // Dynamic menu state
+  const [menuData, setMenuData] = useState(staticMenuData);
+  const [menuLoading, setMenuLoading] = useState(true);
+
+  const fetchMenu = useCallback(async () => {
+    try {
+      const res = await fetch('/api/menuHandler');
+      const data = await res.json();
+      if (data.success && data.categories?.length > 0) {
+        setMenuData(transformDbMenu(data.categories));
+      }
+    } catch (err) {
+      console.error('Failed to fetch menu, using static data:', err);
+    } finally {
+      setMenuLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMenu();
+  }, [fetchMenu]);
 
   const [routerReady, setRouterReady] = useState(false);
   useEffect(() => {
     if (router.isReady) setRouterReady(true);
   }, [router.isReady]);
+
+  // Redirect to /menu admin page if ?menu is present
+  useEffect(() => {
+    if (router.isReady && menuParam !== undefined) {
+      router.replace('/menu');
+    }
+  }, [router.isReady, menuParam, router]);
 
   const [showPeopleError, setShowPeopleError] = useState(false);
 
@@ -47,7 +89,7 @@ export default function Home() {
   const [barn1, setBarn1] = useState('');
   const [barn2, setBarn2] = useState('');
 
-  const categories = useMemo(() => menuData, []);
+  const categories = useMemo(() => menuData, [menuData]);
 
   const lines = useMemo(() => {
     const out = [];

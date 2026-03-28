@@ -15,6 +15,17 @@ const {
   deleteOrderById,
 } = require('./controller/orderController');
 
+const {
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  addMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
+  seedMenu,
+} = require('./controller/menuController');
+
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -49,6 +60,24 @@ app.get('/api/orders', getAllOrders);
 app.get('/api/orders/:tableNo', getOrdersByTable);
 // NEW: delete by id
 app.delete('/api/orders/:orderId', deleteOrderById);
+
+// ---------- Menu Routes ----------
+// Get all categories with items
+app.get('/api/menu', getAllCategories);
+// Create category
+app.post('/api/menu/categories', createCategory);
+// Update category
+app.put('/api/menu/categories/:categoryId', updateCategory);
+// Delete category
+app.delete('/api/menu/categories/:categoryId', deleteCategory);
+// Add item to category
+app.post('/api/menu/categories/:categoryId/items', addMenuItem);
+// Update item
+app.put('/api/menu/categories/:categoryId/items/:itemId', updateMenuItem);
+// Delete item
+app.delete('/api/menu/categories/:categoryId/items/:itemId', deleteMenuItem);
+// Seed menu from JSON
+app.post('/api/menu/seed', seedMenu);
 
 // ---------- Start server ----------
 // Initial connection (non-blocking — server starts even if DB is temporarily down)
