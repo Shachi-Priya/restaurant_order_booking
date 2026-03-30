@@ -99,7 +99,7 @@ function mergeItems(existing = [], incoming = []) {
 
 function computeTotals(items) {
   const total = toMoney(
-    items.reduce((sum, item) => sum + item.price * item.qty, 0)
+    items.reduce((sum, item) => sum + item.price * item.qty, 0),
   );
   const SERVICE_TAX_RATE = process.env.SERVICE_TAX_RATE
     ? Number(process.env.SERVICE_TAX_RATE)
@@ -134,56 +134,19 @@ exports.upsertOrder = async (req, res) => {
       return res.status(400).json({ message: 'No valid items in order' });
     }
 
-    // try to find an existing open order
-    let order = await Order.findOne({ tableNo, status: 'placed' }).sort({
-      createdAt: -1,
+    // Always create a new order (never merge with existing)
+    const items = normalizeStoredItems(incomingItems);
+    const totals = computeTotals(items);
+    const order = await Order.create({
+      tableNo,
+      items,
+      ...totals,
+      adult: toNonNegInt(adult),
+      Barn1: toNonNegInt(Barn1),
+      Barn2: toNonNegInt(Barn2),
+      status: 'placed',
     });
-
-    if (!order) {
-      const items = normalizeStoredItems(incomingItems);
-      const totals = computeTotals(items);
-      order = await Order.create({
-        tableNo,
-        items,
-        ...totals,
-        adult: toNonNegInt(adult),
-        Barn1: toNonNegInt(Barn1),
-        Barn2: toNonNegInt(Barn2),
-        status: 'placed',
-      });
-      return res.status(201).json({ success: true, order, mode: 'created' });
-    }
-
-    // Merge incoming into existing open order
-    const mergedItems = mergeItems(order.items, incomingItems);
-    const totals = computeTotals(mergedItems);
-
-    // Overwrite people counts with provided values if present; else keep
-    const nextAdult =
-      typeof adult !== 'undefined'
-        ? toNonNegInt(adult)
-        : toNonNegInt(order.adult);
-    const nextBarn1 =
-      typeof Barn1 !== 'undefined'
-        ? toNonNegInt(Barn1)
-        : toNonNegInt(order.Barn1);
-    const nextBarn2 =
-      typeof Barn2 !== 'undefined'
-        ? toNonNegInt(Barn2)
-        : toNonNegInt(order.Barn2);
-
-    order.items = mergedItems;
-    order.total = totals.total;
-    order.serviceTax = totals.serviceTax;
-    order.GST = totals.GST;
-    order.payable = totals.payable;
-    order.adult = nextAdult;
-    order.Barn1 = nextBarn1;
-    order.Barn2 = nextBarn2;
-
-    await order.save();
-
-    return res.status(200).json({ success: true, order, mode: 'updated' });
+    return res.status(201).json({ success: true, order, mode: 'created' });
   } catch (err) {
     console.error('Error upserting order:', err);
     return res
@@ -289,23 +252,28 @@ exports.getOrdersByTable = async (req, res) => {
   }
 };
 
-
 // ============ DELETE ORDER ============
 exports.deleteOrderById = async (req, res) => {
   try {
-    const orderId = String(req.params.orderId || "").trim();
+    const orderId = String(req.params.orderId || '').trim();
     if (!orderId) {
-      return res.status(400).json({ success: false, message: "orderId is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: 'orderId is required' });
     }
 
     const deleted = await Order.findByIdAndDelete(orderId);
     if (!deleted) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Order not found' });
     }
 
     return res.json({ success: true, order: deleted, deletedId: deleted._id });
   } catch (err) {
-    console.error("Error deleting order:", err);
-    return res.status(500).json({ success: false, message: "Server error", error: err.message });
+    console.error('Error deleting order:', err);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Server error', error: err.message });
   }
 };

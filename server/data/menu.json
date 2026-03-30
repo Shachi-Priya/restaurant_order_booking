@@ -93,17 +93,17 @@
     ]
   },
   {
-    "category": "SASHIMI DELUXE 4 ST",
+    "category": "SASHIMI",
     "items": [
-      { "id": 59, "name": "Lax" },
-      { "id": 60, "name": "Tonfisk" }
+      { "id": 59, "name": "Lax", "price": 99 },
+      { "id": 60, "name": "Tonfisk", "price": 99 }
     ]
   },
   {
-    "category": "SASHIMI SPECIAL",
+    "category": "SASHIMI DELUXE 4 ST",
     "items": [
-      { "id": 61, "name": "Lax Special" },
-      { "id": 62, "name": "Tonfisk Special" }
+      { "id": 61, "name": "Lax", "price": 129 },
+      { "id": 62, "name": "Tonfisk", "price": 129 }
     ]
   },
   {

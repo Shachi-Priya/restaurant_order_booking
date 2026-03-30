@@ -487,12 +487,19 @@ export default function Home() {
 
                         {/* Footer - explicit fixed height */}
                         <div
-                          style={{ height: 44 }}
-                          className="px-2 flex items-center justify-between bg-[#1a2f28] border-t border-white/10 sm:!h-12 sm:px-3"
+                          style={{ height: it.price ? 54 : 44 }}
+                          className="px-2 flex items-center justify-between bg-[#1a2f28] border-t border-white/10 sm:!h-auto sm:px-3 sm:py-1.5"
                         >
-                          <span className="font-medium text-white truncate pr-2 text-[11px] sm:text-xs leading-tight">
-                            {it.name}
-                          </span>
+                          <div className="min-w-0 pr-2">
+                            <span className="font-medium text-white truncate block text-[11px] sm:text-xs leading-tight">
+                              {it.name}
+                            </span>
+                            {it.price > 0 && (
+                              <span className="text-red-400 font-bold text-[11px] sm:text-xs">
+                                +{it.price}KR
+                              </span>
+                            )}
+                          </div>
 
                           <div className="flex items-center bg-[#0f1f1a] rounded-full border border-white/10">
                             <button
