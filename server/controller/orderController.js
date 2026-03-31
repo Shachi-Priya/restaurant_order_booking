@@ -33,14 +33,25 @@ function sanitizeItems(clientItems = []) {
   for (const raw of clientItems) {
     const id = Number(raw.id);
     const found = menuIndex[id];
-    if (!found) continue;
     const qty = toQty(raw.qty);
-    out.push({
-      id: String(found.id), // store id as string consistently
-      name: found.name,
-      price: toMoney(found.price),
-      qty,
-    });
+    if (found) {
+      // Known static menu item — use server-side truth
+      out.push({
+        id: String(found.id),
+        name: found.name,
+        price: toMoney(found.price),
+        qty,
+      });
+    } else if (raw.name && typeof raw.name === 'string' && raw.name.trim()) {
+      // DB-added item (MongoDB ObjectId) — accept with client-provided name/price
+      out.push({
+        id: String(raw.id),
+        name: raw.name.trim().substring(0, 100),
+        price: toMoney(raw.price ?? 0),
+        qty,
+      });
+    }
+    // else skip unknown items with no name
   }
   return out;
 }

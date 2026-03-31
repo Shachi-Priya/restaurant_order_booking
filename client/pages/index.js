@@ -191,7 +191,12 @@ export default function Home() {
     try {
       const payload = {
         tableNo,
-        items: lines.map((l) => ({ id: l.id, qty: l.qty })),
+        items: lines.map((l) => ({
+          id: l.id,
+          name: l.name,
+          price: l.price,
+          qty: l.qty,
+        })),
         adult: adultNum,
         Barn1: barn1Num,
         Barn2: barn2Num,
