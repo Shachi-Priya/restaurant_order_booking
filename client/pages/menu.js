@@ -24,6 +24,33 @@ export default function MenuAdmin() {
   const [editImagePreview, setEditImagePreview] = useState('');
   const [editImageFile, setEditImageFile] = useState(null);
 
+  // Move category up or down
+  const moveCategory = async (index, direction) => {
+    const ids = categories.map((c) => c._id);
+    const target = index + direction;
+    if (target < 0 || target >= ids.length) return;
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    setSaving(true);
+    try {
+      const res = await fetch('/api/menuHandler?action=reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds: ids }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCategories(data.categories || []);
+        showMessage('Order updated!');
+      } else {
+        showMessage(data.message || 'Failed', 'error');
+      }
+    } catch (err) {
+      showMessage('Error: ' + err.message, 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const showMessage = (text, type = 'success') => {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 4000);
@@ -373,7 +400,7 @@ export default function MenuAdmin() {
                 </p>
               </div>
             ) : (
-              categories.map((cat) => (
+              categories.map((cat, catIndex) => (
                 <div key={cat._id} className="premium-card overflow-hidden">
                   {/* Category Header */}
                   <div className="bg-[#0f1f1a] p-4 flex items-center justify-between border-b border-white/10">
@@ -403,7 +430,24 @@ export default function MenuAdmin() {
                         {cat.name}
                       </h3>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
+                      {/* Reorder buttons */}
+                      <button
+                        onClick={() => moveCategory(catIndex, -1)}
+                        disabled={catIndex === 0 || saving}
+                        className="p-1.5 hover:bg-white/10 rounded-lg transition disabled:opacity-30 text-white/70 text-sm"
+                        title="Move up"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        onClick={() => moveCategory(catIndex, 1)}
+                        disabled={catIndex === categories.length - 1 || saving}
+                        className="p-1.5 hover:bg-white/10 rounded-lg transition disabled:opacity-30 text-white/70 text-sm"
+                        title="Move down"
+                      >
+                        ▼
+                      </button>
                       <button
                         onClick={() => setEditingCategory(cat._id)}
                         className="p-2 hover:bg-white/10 rounded-lg transition"
@@ -630,6 +674,13 @@ export default function MenuAdmin() {
                                     className="w-full bg-[#0f1f1a] border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none"
                                     id={`edit-image-${item._id}`}
                                   />
+                                  <input
+                                    type="number"
+                                    defaultValue={item.price || 0}
+                                    placeholder="Price"
+                                    className="w-full bg-[#0f1f1a] border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none"
+                                    id={`edit-price-${item._id}`}
+                                  />
                                   <div className="flex gap-1">
                                     <button
                                       onClick={() => {
@@ -639,10 +690,16 @@ export default function MenuAdmin() {
                                         const image = document.getElementById(
                                           `edit-image-${item._id}`,
                                         ).value;
+                                        const price =
+                                          parseFloat(
+                                            document.getElementById(
+                                              `edit-price-${item._id}`,
+                                            ).value,
+                                          ) || 0;
                                         updateItem(
                                           cat._id,
                                           item._id,
-                                          { name, image },
+                                          { name, image, price },
                                           !!editImageFile,
                                         );
                                       }}
@@ -664,12 +721,19 @@ export default function MenuAdmin() {
                                   </div>
                                 </div>
                               ) : (
-                                <p
-                                  className="text-white text-xs font-medium truncate"
-                                  title={item.name}
-                                >
-                                  {item.name}
-                                </p>
+                                <div>
+                                  <p
+                                    className="text-white text-xs font-medium truncate"
+                                    title={item.name}
+                                  >
+                                    {item.name}
+                                  </p>
+                                  {item.price > 0 && (
+                                    <p className="text-red-400 text-[10px] font-bold">
+                                      +{item.price}KR
+                                    </p>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>

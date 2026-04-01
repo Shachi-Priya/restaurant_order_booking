@@ -490,23 +490,20 @@ export default function Home() {
                           />
                         </div>
 
-                        {/* Footer - explicit fixed height */}
-                        <div
-                          style={{ height: it.price ? 54 : 44 }}
-                          className="px-2 flex items-center justify-between bg-[#1a2f28] border-t border-white/10 sm:!h-auto sm:px-3 sm:py-1.5"
-                        >
-                          <div className="min-w-0 pr-2">
-                            <span className="font-medium text-white truncate block text-[11px] sm:text-xs leading-tight">
+                        {/* Footer */}
+                        <div className="px-2 py-1.5 flex items-center justify-between bg-[#1a2f28] border-t border-white/10 sm:px-3">
+                          <div className="min-w-0 pr-1 flex-1">
+                            <span className="font-medium text-white text-[10px] sm:text-xs leading-tight line-clamp-2">
                               {it.name}
                             </span>
                             {it.price > 0 && (
-                              <span className="text-red-400 font-bold text-[11px] sm:text-xs">
+                              <span className="text-red-400 font-bold text-[10px] sm:text-xs block">
                                 +{it.price}KR
                               </span>
                             )}
                           </div>
 
-                          <div className="flex items-center bg-[#0f1f1a] rounded-full border border-white/10">
+                          <div className="flex items-center bg-[#0f1f1a] rounded-full border border-white/10 flex-shrink-0">
                             <button
                               className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-white/20 text-white text-sm font-medium transition-colors"
                               onClick={() => remove(it)}

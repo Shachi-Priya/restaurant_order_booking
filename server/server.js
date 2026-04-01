@@ -79,6 +79,10 @@ app.delete('/api/menu/categories/:categoryId/items/:itemId', deleteMenuItem);
 // Seed menu from JSON
 app.post('/api/menu/seed', seedMenu);
 
+// Reorder categories
+const { reorderCategories } = require('./controller/menuController');
+app.put('/api/menu/reorder', reorderCategories);
+
 // ---------- Start server ----------
 // Initial connection (non-blocking — server starts even if DB is temporarily down)
 connectMongo()

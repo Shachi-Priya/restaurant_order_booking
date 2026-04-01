@@ -14,6 +14,9 @@ export default async function handler(req, res) {
   // Build URL based on action/params
   if (action === 'seed') {
     url = `${SERVER}/api/menu/seed`;
+  } else if (action === 'reorder') {
+    url = `${SERVER}/api/menu/reorder`;
+    fetchMethod = 'PUT';
   } else if (categoryId && itemId) {
     url = `${SERVER}/api/menu/categories/${categoryId}/items/${itemId}`;
   } else if (categoryId && query.items === 'true') {

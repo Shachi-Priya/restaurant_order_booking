@@ -92,13 +92,11 @@ const addMenuItem = async (req, res) => {
     category.items.push(newItem);
     await category.save();
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        item: category.items[category.items.length - 1],
-        category,
-      });
+    res.status(201).json({
+      success: true,
+      item: category.items[category.items.length - 1],
+      category,
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -196,6 +194,26 @@ const seedMenu = async (req, res) => {
   }
 };
 
+// Reorder categories
+const reorderCategories = async (req, res) => {
+  try {
+    const { orderedIds } = req.body;
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'orderedIds array required' });
+    }
+    const ops = orderedIds.map((id, i) => ({
+      updateOne: { filter: { _id: id }, update: { $set: { order: i } } },
+    }));
+    await Category.bulkWrite(ops);
+    const categories = await Category.find().sort({ order: 1 });
+    res.json({ success: true, categories });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 module.exports = {
   getAllCategories,
   createCategory,
@@ -205,4 +223,5 @@ module.exports = {
   updateMenuItem,
   deleteMenuItem,
   seedMenu,
+  reorderCategories,
 };
