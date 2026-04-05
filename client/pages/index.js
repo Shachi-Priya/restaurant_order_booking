@@ -51,14 +51,9 @@ export default function Home() {
       try {
         const data = JSON.parse(text);
         if (data.success && data.categories?.length > 0) {
-          // Merge: DB categories first, then static categories not in DB
+          // DB is the single source of truth — only show DB categories
           const dbMenu = transformDbMenu(data.categories);
-          const dbNames = new Set(dbMenu.map((c) => c.category));
-          const merged = [
-            ...dbMenu,
-            ...staticMenuData.filter((c) => !dbNames.has(c.category)),
-          ];
-          setMenuData(merged);
+          setMenuData(dbMenu);
         }
       } catch {
         console.error('Menu API returned non-JSON');
