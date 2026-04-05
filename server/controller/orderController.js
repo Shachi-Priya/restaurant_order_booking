@@ -252,7 +252,7 @@ exports.reopenOrder = async (req, res) => {
 // ============ READS ============
 exports.getAllOrders = async (_req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find().sort({ createdAt: 1 });
     return res.json({ success: true, orders });
   } catch (err) {
     return res

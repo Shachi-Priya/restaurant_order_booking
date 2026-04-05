@@ -125,7 +125,9 @@ export default function SupportList() {
         cache: 'no-store',
       });
       const data = await res.json();
-      setOrders(Array.isArray(data?.orders) ? data.orders : []);
+      const all = Array.isArray(data?.orders) ? data.orders : [];
+      // Only show non-completed orders (completed ones go to history)
+      setOrders(all.filter((o) => o.status !== 'completed'));
       setLastUpdated(new Date());
       setSecondsLeft(RELOAD_INTERVAL); // reset countdown
     } finally {
@@ -157,6 +159,12 @@ export default function SupportList() {
     setOrders((prev) =>
       prev.map((o) => (o._id === id ? { ...o, status: nextStatus } : o)),
     );
+    // Auto-hide completed orders after 5 seconds
+    if (nextStatus === 'completed') {
+      setTimeout(() => {
+        setOrders((prev) => prev.filter((o) => o._id !== id));
+      }, 5000);
+    }
   };
 
   const deleteOrder = async (orderId) => {

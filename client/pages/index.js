@@ -72,6 +72,12 @@ export default function Home() {
 
   useEffect(() => {
     fetchMenu();
+    // Re-fetch menu when tab becomes visible again (admin may have changed items)
+    const onVisChange = () => {
+      if (document.visibilityState === 'visible') fetchMenu();
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+    return () => document.removeEventListener('visibilitychange', onVisChange);
   }, [fetchMenu]);
 
   const [routerReady, setRouterReady] = useState(false);
@@ -263,7 +269,7 @@ export default function Home() {
   // ---------- Support page ----------
   if (isSupport) {
     return (
-      <Shell title="Support — All Orders" subtitle="Newest first">
+      <Shell title="Support — All Orders" subtitle="Oldest first">
         <div className="space-y-4">
           <SupportList />
         </div>
