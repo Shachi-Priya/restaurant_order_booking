@@ -34,24 +34,35 @@ function sanitizeItems(clientItems = []) {
     const id = Number(raw.id);
     const found = menuIndex[id];
     const qty = toQty(raw.qty);
+    // Grab category from the matching static section, or from client
+    let category = '';
     if (found) {
-      // Known static menu item — use server-side truth
+      // Find category name from static menu
+      for (const section of menu) {
+        if (section.items.some((it) => Number(it.id) === id)) {
+          category = section.category;
+          break;
+        }
+      }
       out.push({
         id: String(found.id),
         name: found.name,
         price: toMoney(found.price),
         qty,
+        category,
+        image: raw.image || `/menu/${found.id}.jpg`,
       });
     } else if (raw.name && typeof raw.name === 'string' && raw.name.trim()) {
-      // DB-added item (MongoDB ObjectId) — accept with client-provided name/price
+      // DB-added item (MongoDB ObjectId) — accept with client-provided data
       out.push({
         id: String(raw.id),
         name: raw.name.trim().substring(0, 100),
         price: toMoney(raw.price ?? 0),
         qty,
+        category: (raw.category || '').substring(0, 100),
+        image: raw.image || '/menu/default.jpg',
       });
     }
-    // else skip unknown items with no name
   }
   return out;
 }
@@ -66,6 +77,8 @@ function normalizeStoredItems(items = []) {
       name: canonical.name ?? it.name,
       price: toMoney(canonical.price ?? it.price ?? 0),
       qty: toQty(it.qty),
+      category: it.category || '',
+      image: it.image || '/menu/default.jpg',
     };
   });
 }

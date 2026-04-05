@@ -114,6 +114,8 @@ export default function Home() {
             name: it.name,
             price: it.price || 0,
             qty: q,
+            category: sec.category,
+            image: it.image || `/menu/${it.id}.jpg`,
             lineTotal: (it.price || 0) * q,
           });
         }
@@ -196,6 +198,8 @@ export default function Home() {
           name: l.name,
           price: l.price,
           qty: l.qty,
+          category: l.category,
+          image: l.image,
         })),
         adult: adultNum,
         Barn1: barn1Num,

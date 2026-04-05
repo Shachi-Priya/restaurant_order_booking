@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function MenuAdmin() {
   const [categories, setCategories] = useState([]);
@@ -350,13 +351,21 @@ export default function MenuAdmin() {
       <div className="min-h-screen bg-gradient-to-b from-[#1a3a2e] via-[#1d3f32] to-[#152b23] text-white">
         <div className="max-w-6xl mx-auto px-4 py-6">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent">
-              Menu Admin
-            </h1>
-            <p className="text-white/60 text-sm mt-1">
-              Manage categories & items
-            </p>
+          <div className="mb-8 flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent">
+                Menu Admin
+              </h1>
+              <p className="text-white/60 text-sm mt-1">
+                Manage categories & items
+              </p>
+            </div>
+            <Link
+              href="/history"
+              className="px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-xl text-amber-200 text-sm hover:bg-amber-500/30 transition flex items-center gap-2"
+            >
+              📋 Order History
+            </Link>
           </div>
 
           {/* Message */}

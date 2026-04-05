@@ -21,6 +21,13 @@ function buildMenuLookup(menu) {
 }
 
 function lookupItem(lookup, item) {
+  // Prefer stored category/image from order data
+  if (item.category) {
+    return {
+      category: item.category,
+      image: item.image || '/menu/default.jpg',
+    };
+  }
   if (item.id && lookup.byId[String(item.id)])
     return lookup.byId[String(item.id)];
   if (item.name && lookup.byName[item.name.toLowerCase()])
@@ -34,7 +41,7 @@ function groupByCategory(items, lookup) {
   for (const it of items) {
     const info = lookupItem(lookup, it);
     if (!groups[info.category]) groups[info.category] = [];
-    groups[info.category].push({ ...it, image: info.image });
+    groups[info.category].push({ ...it, image: it.image || info.image });
   }
   return groups;
 }

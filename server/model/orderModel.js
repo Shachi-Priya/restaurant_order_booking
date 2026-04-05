@@ -30,11 +30,9 @@
 // module.exports =
 //   mongoose.models.Order || mongoose.model("Order", OrderSchema);
 
-
-
 //////////////////
 // server/model/orderModel.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const toMoney = (v) => {
   const n = Number(v);
@@ -62,8 +60,10 @@ const OrderItemSchema = new mongoose.Schema(
       default: 1,
       set: (v) => toQty(v),
     },
+    category: { type: String, default: '' },
+    image: { type: String, default: '/menu/default.jpg' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const OrderSchema = new mongoose.Schema(
@@ -71,7 +71,7 @@ const OrderSchema = new mongoose.Schema(
     tableNo: { type: Number, required: true, min: 1 },
     items: {
       type: [OrderItemSchema],
-      validate: v => Array.isArray(v) && v.length > 0,
+      validate: (v) => Array.isArray(v) && v.length > 0,
     },
 
     total: { type: Number, default: 0, min: 0, set: (v) => toMoney(v) },
@@ -79,16 +79,31 @@ const OrderSchema = new mongoose.Schema(
     GST: { type: Number, default: 0, min: 0, set: (v) => toMoney(v) },
     payable: { type: Number, default: 0, min: 0, set: (v) => toMoney(v) },
 
-    adult: { type: Number, default: 0, min: 0, set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0) },
-    Barn1: { type: Number, default: 0, min: 0, set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0) },
-    Barn2: { type: Number, default: 0, min: 0, set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0) },
+    adult: {
+      type: Number,
+      default: 0,
+      min: 0,
+      set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0),
+    },
+    Barn1: {
+      type: Number,
+      default: 0,
+      min: 0,
+      set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0),
+    },
+    Barn2: {
+      type: Number,
+      default: 0,
+      min: 0,
+      set: (v) => Math.max(0, parseInt(v ?? 0, 10) || 0),
+    },
 
     // placed = open/ongoing (we keep adding to this order)
     // completed = user finished ordering (stop adding)
-    status: { type: String, enum: ["placed", "completed"], default: "placed" },
+    status: { type: String, enum: ['placed', 'completed'], default: 'placed' },
     createdAt: { type: Date, default: Date.now },
   },
-  { collection: "orders" }
+  { collection: 'orders' },
 );
 
-module.exports = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+module.exports = mongoose.models.Order || mongoose.model('Order', OrderSchema);
