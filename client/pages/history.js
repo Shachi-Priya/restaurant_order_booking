@@ -8,6 +8,7 @@ export default function OrderHistory() {
   const [selectedTable, setSelectedTable] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchOrders = useCallback(async (tableNo) => {
     setLoading(true);
@@ -25,6 +26,29 @@ export default function OrderHistory() {
   const selectTable = (t) => {
     setSelectedTable(t);
     fetchOrders(t);
+  };
+
+  const deleteOrder = async (orderId) => {
+    if (!orderId) return;
+    const yes = confirm('Delete this order permanently?');
+    if (!yes) return;
+    setDeletingId(orderId);
+    try {
+      const res = await fetch(`/api/orderHandler?action=delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+      if (res.ok) {
+        setOrders((prev) => prev.filter((o) => o._id !== orderId));
+      } else {
+        alert('Failed to delete order');
+      }
+    } catch {
+      alert('Network error');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const formatDate = (d) => {
@@ -208,11 +232,20 @@ export default function OrderHistory() {
                             )}{' '}
                             items
                           </span>
-                          {o.payable > 0 && (
-                            <span className="text-amber-300 font-bold">
-                              {o.payable} KR
-                            </span>
-                          )}
+                          <div className="flex items-center gap-3">
+                            {o.payable > 0 && (
+                              <span className="text-amber-300 font-bold">
+                                {o.payable} KR
+                              </span>
+                            )}
+                            <button
+                              onClick={() => deleteOrder(o._id)}
+                              disabled={deletingId === o._id}
+                              className="px-2 py-1 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 transition disabled:opacity-50"
+                            >
+                              {deletingId === o._id ? '...' : '🗑️ Delete'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );

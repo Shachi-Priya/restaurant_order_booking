@@ -417,6 +417,15 @@ export default function Home() {
           )}
         </div>
 
+        {/* OBS warning */}
+        <div className="mt-4 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3">
+          <p className="text-red-200 text-xs sm:text-sm font-medium leading-relaxed text-center">
+            <span className="font-bold text-red-300">OBS!</span> För att undvika
+            matspill får du/ni inte lämna mer än 3 sushibitar/bord vid måltidens
+            slut, annars debiteras 15 kr/bit.
+          </p>
+        </div>
+
         {/* Category chips (NORMAL, non-sticky) */}
         <div className="mt-5 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {categories.map((sec, i) => {
@@ -565,13 +574,6 @@ export default function Home() {
                 ) : (
                   'Lägg beställning'
                 )}
-              </button>
-
-              <button
-                className="px-4 sm:px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white font-semibold text-sm sm:text-base hover:bg-white/15 transition-all"
-                onClick={completeOrder}
-              >
-                Slutför
               </button>
             </div>
           </div>
